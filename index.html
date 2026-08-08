@@ -107,6 +107,13 @@
   .task:last-child{border-bottom:0}
   .task .fn{font-size:11px;color:var(--accent2);background:#12233c;padding:1px 7px;border-radius:6px;white-space:nowrap}
   .task .owner{color:var(--muted);font-size:12px;margin-left:auto;white-space:nowrap}
+  .pri{font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;white-space:nowrap;letter-spacing:.4px}
+  .pri.p1{background:#3a1414;color:#ff6b6b;box-shadow:inset 0 0 0 1px #7a2a2a}
+  .pri.p2{background:#3a2a12;color:#f5b942;box-shadow:inset 0 0 0 1px #6b4e1a}
+  .pri.p3{background:#1c2735;color:#8fb3e0;box-shadow:inset 0 0 0 1px #2f4763}
+  .checklist .item .pri{margin-left:auto}
+  .grouphdr{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--dim);margin:12px 0 4px;padding-left:2px}
+  .grouphdr:first-child{margin-top:0}
 
   /* function checklist view */
   .checklist .item{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid #1c2330}
@@ -149,6 +156,10 @@
       <div class="kpis" id="kpis"></div>
       <div class="grid">
         <div style="display:flex;flex-direction:column;gap:18px">
+          <div class="card">
+            <h3>⚠ Outstanding Tasks — by priority (all functions)</h3>
+            <div class="body" id="outstanding"></div>
+          </div>
           <div class="card hier">
             <h3>Function Hierarchy &amp; Status</h3>
             <div class="body">
@@ -156,10 +167,6 @@
               <div class="funcs" id="funcs"></div>
               <div class="hint">Tip: click any function to open its checklist. Open this page in a second tab and change roles to see live multi-user sync.</div>
             </div>
-          </div>
-          <div class="card">
-            <h3>Outstanding Tasks (all functions)</h3>
-            <div class="body" id="outstanding"></div>
           </div>
         </div>
         <div class="card">
@@ -189,32 +196,36 @@
 
 <script>
 /* ---------------- seed data ---------------- */
+// priorities: 1=High (critical), 2=Medium, 3=Low
 const SEED = {
-  command:{name:"Incident Coordinator", lead:"A. Reyes"},
+  command:{name:"Incident Commander", lead:"A. Reyes"},
   functions:[
-    {id:"comms", name:"Communications", lead:"J. Patel",
-      checklist:["Notify all stakeholders","Draft public statement","Set up briefing channel","Log media enquiries","Confirm contact tree updated"]},
-    {id:"log", name:"Logistics", lead:"M. Okoro",
-      checklist:["Confirm supply inventory","Arrange transport","Secure staging area","Allocate equipment","Track resource requests"]},
-    {id:"safety", name:"Safety", lead:"S. Larsen",
-      checklist:["Complete site risk assessment","Verify PPE availability","Brief team on hazards","Establish exclusion zone","Record safety incidents"]},
-    {id:"ops", name:"Operations", lead:"D. Nguyen",
-      checklist:["Assign field teams","Set operational objectives","Monitor task progress","Coordinate with Logistics","Compile situation report"]},
+    {id:"fire", name:"Fire", lead:"J. Patel",
+      checklist:[["Confirm fire ground perimeter",1],["Deploy suppression crews",1],["Establish water supply",2],["Check for structural collapse risk",1],["Log resource requests",3]]},
+    {id:"medical", name:"Medical", lead:"S. Larsen",
+      checklist:[["Set up triage point",1],["Confirm ambulance staging",1],["Report casualty count",1],["Request additional medics",2],["Update hospital liaison",2]]},
+    {id:"security", name:"Security", lead:"M. Okoro",
+      checklist:[["Establish exclusion zone",1],["Control site access points",2],["Brief team on hazards",2],["Coordinate crowd management",2],["Record security incidents",3]]},
+    {id:"logistics", name:"Logistics", lead:"D. Nguyen",
+      checklist:[["Confirm equipment inventory",2],["Arrange transport",2],["Secure staging area",1],["Allocate resources to functions",2],["Track outstanding supply requests",3]]},
+    {id:"planning", name:"Planning", lead:"K. Adeyemi",
+      checklist:[["Compile situation report",1],["Set operational objectives",2],["Forecast resource needs",2],["Track task progress across functions",2],["Prepare next-shift briefing",3]]},
   ],
   events:[]
 };
+const PRI={1:{label:"HIGH",cls:"p1"},2:{label:"MED",cls:"p2"},3:{label:"LOW",cls:"p3"}};
 
 const PEOPLE = [{id:"cmd",name:"A. Reyes",role:"Incident Coordinator"}]
   .concat(SEED.functions.map(f=>({id:f.id,name:f.lead,role:f.name})));
 
 /* ---------------- state / storage ---------------- */
-const KEY="opsdash.v1";
+const KEY="opsdash.v2";
 const bc = ("BroadcastChannel" in window) ? new BroadcastChannel("opsdash") : null;
 
 function load(){
   try{const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.functions) return s;}catch(e){}
   const st=structuredClone(SEED);
-  st.functions.forEach(f=>f.checklist=f.checklist.map((t,i)=>({id:f.id+"-"+i,text:t,done:false})));
+  st.functions.forEach(f=>f.checklist=f.checklist.map((t,i)=>({id:f.id+"-"+i,text:t[0],pri:t[1],done:false})));
   st.events=[{id:uid(),ts:Date.now()-1000*60*7,person:"A. Reyes",fn:"Command",text:"Incident declared — functions activated"}];
   return st;
 }
@@ -278,8 +289,14 @@ function renderOutstanding(){
   state.functions.forEach(f=>f.checklist.filter(i=>!i.done).forEach(i=>rows.push({f,i})));
   const el=document.getElementById('outstanding');
   if(!rows.length){el.innerHTML=`<div class="empty">🎉 All tasks complete across every function.</div>`;return;}
-  el.innerHTML=rows.map(({f,i})=>`<div class="task">
-    <span class="fn">${f.name}</span><span>${i.text}</span><span class="owner">${f.lead}</span></div>`).join("");
+  rows.sort((a,b)=>(a.i.pri-b.i.pri)); // High priority first
+  let html="",curPri=null;
+  rows.forEach(({f,i})=>{
+    if(i.pri!==curPri){curPri=i.pri;html+=`<div class="grouphdr">${PRI[i.pri].label} priority</div>`;}
+    html+=`<div class="task"><span class="pri ${PRI[i.pri].cls}">${PRI[i.pri].label}</span>
+      <span class="fn">${f.name}</span><span>${i.text}</span><span class="owner">${f.lead}</span></div>`;
+  });
+  el.innerHTML=html;
 }
 function renderLog(){
   const el=document.getElementById('log');
@@ -297,7 +314,7 @@ function renderChecklist(){
   document.getElementById('checklist').innerHTML=
     f.checklist.map(i=>`<div class="item ${i.done?'done':''}">
       <input type="checkbox" ${i.done?'checked':''} data-item="${i.id}">
-      <label>${i.text}</label></div>`).join("")
+      <label>${i.text}</label><span class="pri ${PRI[i.pri].cls}">${PRI[i.pri].label}</span></div>`).join("")
     +`<div class="noteRow"><input id="noteInput" placeholder="Log a note or update to the event log…">
         <button class="btn" id="noteBtn">Log event</button></div>
       <div class="hint">Ticking an item auto-logs a timestamped event under your name. Notes post straight to the central event log.</div>`;
