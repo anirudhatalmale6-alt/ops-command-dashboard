@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ops Command — Collaborative Task Dashboard (Demo)</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --line:#2b3444;
+    --ink:#e6edf3; --muted:#8b98a9; --dim:#5b6675;
+    --accent:#3b82f6; --accent2:#60a5fa;
+    --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
+    --chip:#232b39;
+    --radius:12px; --shadow:0 1px 0 rgba(255,255,255,.02),0 8px 24px rgba(0,0,0,.35);
+    font-synthesis:none;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:radial-gradient(1200px 600px at 80% -10%,#16203010,transparent),var(--bg);
+    color:var(--ink);
+    font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent2);text-decoration:none}
+  .app{display:flex;flex-direction:column;min-height:100vh}
+
+  /* top bar */
+  header.bar{
+    display:flex;align-items:center;gap:16px;padding:12px 20px;
+    border-bottom:1px solid var(--line);background:linear-gradient(180deg,#121722,#0f141d);
+    position:sticky;top:0;z-index:20;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2px}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px #22c55e22;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+  .brand small{color:var(--muted);font-weight:500}
+  .who{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .who select,.who button{
+    background:var(--chip);color:var(--ink);border:1px solid var(--line);
+    padding:7px 10px;border-radius:8px;font-size:13px;cursor:pointer;
+  }
+  .who .avatar{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;color:#0b1220}
+  .live{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px}
+  .live .dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+
+  /* tabs */
+  nav.tabs{display:flex;gap:4px;padding:8px 20px;border-bottom:1px solid var(--line);background:var(--bg)}
+  nav.tabs button{
+    background:transparent;border:0;color:var(--muted);padding:8px 14px;border-radius:8px;
+    font-size:13px;font-weight:600;cursor:pointer;
+  }
+  nav.tabs button.active{background:var(--panel2);color:var(--ink)}
+
+  main{padding:20px;max-width:1400px;width:100%;margin:0 auto}
+
+  /* KPI row */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+  .kpi .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.6px}
+  .kpi .val{font-size:28px;font-weight:750;margin-top:4px}
+  .kpi .sub{color:var(--dim);font-size:12px;margin-top:2px}
+  .kpi.good .val{color:var(--ok)} .kpi.warn .val{color:var(--warn)}
+
+  .grid{display:grid;grid-template-columns:1.35fr 1fr;gap:18px}
+  @media(max-width:1000px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .card h3{margin:0;padding:13px 16px;border-bottom:1px solid var(--line);font-size:13px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .card .body{padding:14px 16px}
+
+  /* hierarchy */
+  .hier .command{
+    background:linear-gradient(180deg,#1a2740,#141d30);border:1px solid #294066;border-radius:10px;
+    padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:14px;position:relative;
+  }
+  .hier .command::after{content:"";position:absolute;left:26px;bottom:-14px;width:2px;height:14px;background:var(--line)}
+  .funcs{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:560px){.funcs{grid-template-columns:1fr}}
+  .fcard{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;transition:.12s;position:relative}
+  .fcard:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .fcard .top{display:flex;align-items:center;gap:10px}
+  .fcard .name{font-weight:700}
+  .fcard .lead{color:var(--muted);font-size:12px;margin-top:2px}
+  .avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;color:#0b1220;flex:none}
+  .bar-wrap{height:7px;background:#0e1420;border-radius:6px;margin-top:10px;overflow:hidden}
+  .bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--ok));border-radius:6px;transition:width .4s}
+  .fmeta{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--muted)}
+  .badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:700}
+  .badge.open{background:#3a2a12;color:var(--warn)} .badge.done{background:#0f2c1c;color:var(--ok)}
+  .laststamp{color:var(--dim);font-size:11px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* event log */
+  .log{max-height:520px;overflow:auto}
+  .ev{display:flex;gap:11px;padding:10px 4px;border-bottom:1px solid #1c2330}
+  .ev:last-child{border-bottom:0}
+  .ev .t{color:var(--dim);font-variant-numeric:tabular-nums;font-size:12px;white-space:nowrap;padding-top:1px}
+  .ev .who{margin:0}
+  .ev .txt{flex:1}
+  .ev .txt b{color:var(--ink)}
+  .ev .tag{font-size:11px;color:var(--accent2);background:#12233c;padding:1px 7px;border-radius:6px;margin-left:6px}
+  .ev.new{animation:flash 1.2s ease-out}
+  @keyframes flash{0%{background:#1b2c1c}100%{background:transparent}}
+
+  /* outstanding */
+  .task{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid #1c2330}
+  .task:last-child{border-bottom:0}
+  .task .fn{font-size:11px;color:var(--accent2);background:#12233c;padding:1px 7px;border-radius:6px;white-space:nowrap}
+  .task .owner{color:var(--muted);font-size:12px;margin-left:auto;white-space:nowrap}
+
+  /* function checklist view */
+  .checklist .item{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid #1c2330}
+  .checklist .item:last-child{border-bottom:0}
+  .checklist input[type=checkbox]{width:20px;height:20px;accent-color:var(--ok);cursor:pointer;flex:none}
+  .checklist .item.done label{color:var(--dim);text-decoration:line-through}
+  .checklist label{cursor:pointer;flex:1}
+  .noteRow{display:flex;gap:10px;margin-top:14px}
+  .noteRow input{flex:1;background:var(--chip);border:1px solid var(--line);color:var(--ink);padding:9px 12px;border-radius:8px}
+  .btn{background:var(--accent);color:#fff;border:0;padding:9px 16px;border-radius:8px;font-weight:600;cursor:pointer}
+  .btn.ghost{background:var(--chip);color:var(--ink);border:1px solid var(--line)}
+  .funcpick{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .funcpick button{background:var(--chip);border:1px solid var(--line);color:var(--muted);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:600}
+  .funcpick button.active{background:var(--panel2);color:var(--ink);border-color:var(--accent)}
+  .hint{color:var(--dim);font-size:12px;margin-top:10px}
+  .footer{color:var(--dim);font-size:12px;text-align:center;padding:24px}
+  .empty{color:var(--dim);padding:18px 4px;text-align:center;font-size:13px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <div class="brand"><span class="dot"></span> Ops&nbsp;Command <small>· Collaborative Task Dashboard</small></div>
+    <div class="who">
+      <span class="live"><span class="dot"></span> live sync</span>
+      <span class="avatar" id="meAvatar">–</span>
+      <label style="color:var(--muted);font-size:12px">You are:</label>
+      <select id="mePick"></select>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="dash" class="active">Central Dashboard</button>
+    <button data-tab="work">My Function Checklist</button>
+  </nav>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section id="tab-dash">
+      <div class="kpis" id="kpis"></div>
+      <div class="grid">
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <div class="card hier">
+            <h3>Function Hierarchy &amp; Status</h3>
+            <div class="body">
+              <div class="command" id="command"></div>
+              <div class="funcs" id="funcs"></div>
+              <div class="hint">Tip: click any function to open its checklist. Open this page in a second tab and change roles to see live multi-user sync.</div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Outstanding Tasks (all functions)</h3>
+            <div class="body" id="outstanding"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Live Event Log</h3>
+          <div class="body log" id="log"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORK -->
+    <section id="tab-work" style="display:none">
+      <div class="funcpick" id="funcpick"></div>
+      <div class="grid">
+        <div class="card checklist">
+          <h3 id="clTitle">Checklist</h3>
+          <div class="body" id="checklist"></div>
+        </div>
+        <div class="card">
+          <h3>This Function — Recent Activity</h3>
+          <div class="body log" id="funcLog"></div>
+        </div>
+      </div>
+    </section>
+    <div class="footer">Interactive demo · real-time sync across tabs via BroadcastChannel. Production build uses a live server (WebSockets) so remote teammates sync in real time.</div>
+  </main>
+</div>
+
+<script>
+/* ---------------- seed data ---------------- */
+const SEED = {
+  command:{name:"Incident Coordinator", lead:"A. Reyes"},
+  functions:[
+    {id:"comms", name:"Communications", lead:"J. Patel",
+      checklist:["Notify all stakeholders","Draft public statement","Set up briefing channel","Log media enquiries","Confirm contact tree updated"]},
+    {id:"log", name:"Logistics", lead:"M. Okoro",
+      checklist:["Confirm supply inventory","Arrange transport","Secure staging area","Allocate equipment","Track resource requests"]},
+    {id:"safety", name:"Safety", lead:"S. Larsen",
+      checklist:["Complete site risk assessment","Verify PPE availability","Brief team on hazards","Establish exclusion zone","Record safety incidents"]},
+    {id:"ops", name:"Operations", lead:"D. Nguyen",
+      checklist:["Assign field teams","Set operational objectives","Monitor task progress","Coordinate with Logistics","Compile situation report"]},
+  ],
+  events:[]
+};
+
+const PEOPLE = [{id:"cmd",name:"A. Reyes",role:"Incident Coordinator"}]
+  .concat(SEED.functions.map(f=>({id:f.id,name:f.lead,role:f.name})));
+
+/* ---------------- state / storage ---------------- */
+const KEY="opsdash.v1";
+const bc = ("BroadcastChannel" in window) ? new BroadcastChannel("opsdash") : null;
+
+function load(){
+  try{const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.functions) return s;}catch(e){}
+  const st=structuredClone(SEED);
+  st.functions.forEach(f=>f.checklist=f.checklist.map((t,i)=>({id:f.id+"-"+i,text:t,done:false})));
+  st.events=[{id:uid(),ts:Date.now()-1000*60*7,person:"A. Reyes",fn:"Command",text:"Incident declared — functions activated"}];
+  return st;
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function broadcast(){save(); if(bc) bc.postMessage({t:Date.now()});}
+let lastEventId=null;
+function uid(){return Math.random().toString(36).slice(2,9)+performance.now().toString(36).replace('.','');}
+
+let state=load();
+let me = PEOPLE[1]; // default to a function lead
+let activeFunc = state.functions[0].id;
+
+/* ---------------- helpers ---------------- */
+const AV=["#60a5fa","#f59e0b","#22c55e","#ef4444","#a78bfa","#f472b6"];
+function initials(n){return n.split(/[\s.]+/).filter(Boolean).map(x=>x[0]).slice(0,2).join("").toUpperCase();}
+function colorFor(n){let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))>>>0;return AV[h%AV.length];}
+function avatar(name){return `<span class="avatar" style="background:${colorFor(name)}">${initials(name)}</span>`;}
+function ago(ts){const s=(Date.now()-ts)/1000;if(s<60)return Math.floor(s)+"s ago";if(s<3600)return Math.floor(s/60)+"m ago";return Math.floor(s/3600)+"h ago";}
+function hhmm(ts){const d=new Date(ts);return d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+function fn(id){return state.functions.find(f=>f.id===id);}
+function pct(f){const d=f.checklist.filter(i=>i.done).length;return Math.round(d/f.checklist.length*100);}
+function openCount(f){return f.checklist.filter(i=>!i.done).length;}
+function lastEventFor(name){const e=[...state.events].reverse().find(e=>e.fn===name);return e;}
+
+function logEvent(text, fnName){
+  const e={id:uid(),ts:Date.now(),person:me.name,fn:fnName,text};
+  state.events.push(e); lastEventId=e.id; broadcast(); render();
+}
+
+/* ---------------- render ---------------- */
+function renderKpis(){
+  const total=state.functions.reduce((a,f)=>a+f.checklist.length,0);
+  const done=state.functions.reduce((a,f)=>a+f.checklist.filter(i=>i.done).length,0);
+  const open=total-done;
+  const overall=Math.round(done/total*100);
+  document.getElementById('kpis').innerHTML=`
+    <div class="kpi"><div class="label">Overall progress</div><div class="val">${overall}%</div><div class="sub">${done} of ${total} steps complete</div></div>
+    <div class="kpi warn"><div class="label">Outstanding tasks</div><div class="val">${open}</div><div class="sub">across ${state.functions.length} functions</div></div>
+    <div class="kpi"><div class="label">Active functions</div><div class="val">${state.functions.length}</div><div class="sub">${PEOPLE.length} people on duty</div></div>
+    <div class="kpi good"><div class="label">Events logged</div><div class="val">${state.events.length}</div><div class="sub">last ${state.events.length?ago(state.events[state.events.length-1].ts):'—'}</div></div>`;
+}
+function renderHier(){
+  const c=state.command||SEED.command;
+  document.getElementById('command').innerHTML=`${avatar(c.lead)}
+    <div><div style="font-weight:750">${c.name}</div><div class="lead">${c.lead} · coordinating all functions</div></div>
+    <span class="badge done" style="margin-left:auto">COMMAND</span>`;
+  document.getElementById('funcs').innerHTML=state.functions.map(f=>{
+    const p=pct(f),o=openCount(f),le=lastEventFor(f.name);
+    return `<div class="fcard" data-open="${f.id}">
+      <div class="top">${avatar(f.lead)}<div><div class="name">${f.name}</div><div class="lead">${f.lead}</div></div>
+        <span class="badge ${o?'open':'done'}" style="margin-left:auto">${o?o+' open':'done'}</span></div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:${p}%"></div></div>
+      <div class="fmeta"><span>${p}% complete</span><span>${f.checklist.length-o}/${f.checklist.length}</span></div>
+      <div class="laststamp">${le?('● '+le.text+' · '+ago(le.ts)):'no activity yet'}</div>
+    </div>`;
+  }).join("");
+  document.querySelectorAll('.fcard').forEach(el=>el.onclick=()=>{activeFunc=el.dataset.open;switchTab('work');});
+}
+function renderOutstanding(){
+  const rows=[];
+  state.functions.forEach(f=>f.checklist.filter(i=>!i.done).forEach(i=>rows.push({f,i})));
+  const el=document.getElementById('outstanding');
+  if(!rows.length){el.innerHTML=`<div class="empty">🎉 All tasks complete across every function.</div>`;return;}
+  el.innerHTML=rows.map(({f,i})=>`<div class="task">
+    <span class="fn">${f.name}</span><span>${i.text}</span><span class="owner">${f.lead}</span></div>`).join("");
+}
+function renderLog(){
+  const el=document.getElementById('log');
+  const evs=[...state.events].reverse();
+  el.innerHTML=evs.map(e=>`<div class="ev ${e.id===lastEventId?'new':''}">
+    <span class="t">${hhmm(e.ts)}</span>${avatar(e.person)}
+    <span class="txt"><b>${e.person}</b> ${e.text}<span class="tag">${e.fn}</span></span></div>`).join("");
+}
+function renderChecklist(){
+  const f=fn(activeFunc);
+  document.getElementById('clTitle').textContent=f.name+" — "+f.lead;
+  document.getElementById('funcpick').innerHTML=state.functions.map(x=>
+    `<button data-f="${x.id}" class="${x.id===activeFunc?'active':''}">${x.name} <span style="opacity:.6">(${openCount(x)})</span></button>`).join("");
+  document.querySelectorAll('#funcpick button').forEach(b=>b.onclick=()=>{activeFunc=b.dataset.f;render();});
+  document.getElementById('checklist').innerHTML=
+    f.checklist.map(i=>`<div class="item ${i.done?'done':''}">
+      <input type="checkbox" ${i.done?'checked':''} data-item="${i.id}">
+      <label>${i.text}</label></div>`).join("")
+    +`<div class="noteRow"><input id="noteInput" placeholder="Log a note or update to the event log…">
+        <button class="btn" id="noteBtn">Log event</button></div>
+      <div class="hint">Ticking an item auto-logs a timestamped event under your name. Notes post straight to the central event log.</div>`;
+  document.querySelectorAll('#checklist input[type=checkbox]').forEach(cb=>cb.onchange=()=>{
+    const item=f.checklist.find(x=>x.id===cb.dataset.item); item.done=cb.checked;
+    logEvent((cb.checked?'✔ completed':'↩ re-opened')+' “'+item.text+'”', f.name);
+  });
+  document.getElementById('noteBtn').onclick=postNote;
+  document.getElementById('noteInput').addEventListener('keydown',e=>{if(e.key==='Enter')postNote();});
+  // func log
+  document.getElementById('funcLog').innerHTML=[...state.events].reverse().filter(e=>e.fn===f.name)
+    .map(e=>`<div class="ev"><span class="t">${hhmm(e.ts)}</span>${avatar(e.person)}
+      <span class="txt"><b>${e.person}</b> ${e.text}</span></div>`).join("") || `<div class="empty">No activity for this function yet.</div>`;
+}
+function postNote(){
+  const inp=document.getElementById('noteInput');const v=inp.value.trim();if(!v)return;
+  logEvent('📝 '+v, fn(activeFunc).name); inp.value='';
+}
+function renderWho(){
+  const sel=document.getElementById('mePick');
+  sel.innerHTML=PEOPLE.map(p=>`<option value="${p.id}" ${p.id===me.id?'selected':''}>${p.name} — ${p.role}</option>`).join("");
+  sel.onchange=()=>{me=PEOPLE.find(p=>p.id===sel.value); if(me.id!=='cmd')activeFunc=me.id; document.getElementById('meAvatar').outerHTML=avatar(me.name).replace('class="avatar"','id="meAvatar" class="avatar"');};
+  document.getElementById('meAvatar').outerHTML=avatar(me.name).replace('class="avatar"','id="meAvatar" class="avatar"');
+}
+function render(){
+  renderKpis();renderHier();renderOutstanding();renderLog();
+  if(document.getElementById('tab-work').style.display!=='none') renderChecklist();
+  lastEventId=null;
+}
+
+/* ---------------- tabs ---------------- */
+function switchTab(t){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+  document.getElementById('tab-dash').style.display = t==='dash'?'':'none';
+  document.getElementById('tab-work').style.display = t==='work'?'':'none';
+  render(); if(t==='work') renderChecklist();
+}
+document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
+
+/* ---------------- realtime ---------------- */
+if(bc) bc.onmessage=()=>{state=load();render();};
+window.addEventListener('storage',e=>{if(e.key===KEY){state=load();render();}});
+setInterval(()=>{ if(document.getElementById('tab-dash').style.display!=='none'){renderHier();renderLog();renderKpis();} },15000); // refresh "x ago"
+
+/* ---------------- boot ---------------- */
+renderWho();render();
+</script>
+</body>
+</html>
