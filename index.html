@@ -10,127 +10,137 @@
     --ink:#e6edf3; --muted:#8b98a9; --dim:#5b6675;
     --accent:#3b82f6; --accent2:#60a5fa;
     --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
-    --chip:#232b39;
-    --radius:12px; --shadow:0 1px 0 rgba(255,255,255,.02),0 8px 24px rgba(0,0,0,.35);
-    font-synthesis:none;
+    --chip:#232b39; --radius:12px; --shadow:0 1px 0 rgba(255,255,255,.02),0 8px 24px rgba(0,0,0,.35);
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
-  body{
-    background:radial-gradient(1200px 600px at 80% -10%,#16203010,transparent),var(--bg);
-    color:var(--ink);
-    font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
-    -webkit-font-smoothing:antialiased;
-  }
-  a{color:var(--accent2);text-decoration:none}
+  body{background:radial-gradient(1200px 600px at 80% -10%,#16203010,transparent),var(--bg);color:var(--ink);
+    font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;-webkit-font-smoothing:antialiased}
   .app{display:flex;flex-direction:column;min-height:100vh}
 
-  /* top bar */
-  header.bar{
-    display:flex;align-items:center;gap:16px;padding:12px 20px;
-    border-bottom:1px solid var(--line);background:linear-gradient(180deg,#121722,#0f141d);
-    position:sticky;top:0;z-index:20;
-  }
-  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2px}
+  header.bar{display:flex;align-items:center;gap:16px;padding:10px 20px;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#121722,#0f141d);position:sticky;top:0;z-index:20}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
   .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px #22c55e22;animation:pulse 2s infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
   .brand small{color:var(--muted);font-weight:500}
   .who{margin-left:auto;display:flex;align-items:center;gap:10px}
-  .who select,.who button{
-    background:var(--chip);color:var(--ink);border:1px solid var(--line);
-    padding:7px 10px;border-radius:8px;font-size:13px;cursor:pointer;
-  }
-  .who .avatar{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;color:#0b1220}
+  .who select{background:var(--chip);color:var(--ink);border:1px solid var(--line);padding:7px 10px;border-radius:8px;font-size:13px;cursor:pointer}
   .live{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px}
   .live .dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}
 
-  /* tabs */
+  /* incident strip */
+  .strip{display:flex;align-items:center;gap:18px;padding:8px 20px;background:linear-gradient(90deg,#123a5c,#0f2740);border-bottom:1px solid #24405e;color:#dCE9F7}
+  .strip .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:#9fc2e0}
+  .strip input{background:#0e2438;border:1px solid #2b4d6b;color:#eaf3fb;padding:5px 9px;border-radius:7px;font-weight:700;font-size:14px;width:160px}
+  .strip .clock{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;letter-spacing:.5px}
+  .strip .clock small{display:block;font-weight:500;font-size:11px;color:#9fc2e0;text-align:right}
+
   nav.tabs{display:flex;gap:4px;padding:8px 20px;border-bottom:1px solid var(--line);background:var(--bg)}
-  nav.tabs button{
-    background:transparent;border:0;color:var(--muted);padding:8px 14px;border-radius:8px;
-    font-size:13px;font-weight:600;cursor:pointer;
-  }
+  nav.tabs button{background:transparent;border:0;color:var(--muted);padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
   nav.tabs button.active{background:var(--panel2);color:var(--ink)}
 
-  main{padding:20px;max-width:1400px;width:100%;margin:0 auto}
+  main{padding:16px 20px;max-width:1600px;width:100%;margin:0 auto}
 
-  /* KPI row */
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
-  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
-  .kpi .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.6px}
-  .kpi .val{font-size:28px;font-weight:750;margin-top:4px}
-  .kpi .sub{color:var(--dim);font-size:12px;margin-top:2px}
-  .kpi.good .val{color:var(--ok)} .kpi.warn .val{color:var(--warn)}
-
-  .grid{display:grid;grid-template-columns:1.35fr 1fr;gap:18px}
-  @media(max-width:1000px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
+  .board{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:14px;align-items:start}
+  @media(max-width:1150px){.board{grid-template-columns:1fr 1fr}}
+  @media(max-width:820px){.board{grid-template-columns:1fr}}
+  .col{display:flex;flex-direction:column;gap:14px}
 
   .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-  .card h3{margin:0;padding:13px 16px;border-bottom:1px solid var(--line);font-size:13px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
-  .card .body{padding:14px 16px}
+  .card h3{margin:0;padding:11px 14px;border-bottom:1px solid var(--line);font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .card h3 .count{margin-left:auto;background:var(--chip);color:var(--ink);border-radius:20px;padding:1px 9px;font-size:11px}
+  .card .body{padding:12px 14px}
+  .empty{color:var(--dim);padding:14px 4px;text-align:center;font-size:13px}
 
-  /* hierarchy */
-  .hier .command{
-    background:linear-gradient(180deg,#1a2740,#141d30);border:1px solid #294066;border-radius:10px;
-    padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:14px;position:relative;
-  }
-  .hier .command::after{content:"";position:absolute;left:26px;bottom:-14px;width:2px;height:14px;background:var(--line)}
-  .funcs{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-  @media(max-width:560px){.funcs{grid-template-columns:1fr}}
-  .fcard{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;transition:.12s;position:relative}
-  .fcard:hover{border-color:var(--accent);transform:translateY(-1px)}
-  .fcard .top{display:flex;align-items:center;gap:10px}
-  .fcard .name{font-weight:700}
-  .fcard .lead{color:var(--muted);font-size:12px;margin-top:2px}
-  .avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;color:#0b1220;flex:none}
-  .bar-wrap{height:7px;background:#0e1420;border-radius:6px;margin-top:10px;overflow:hidden}
-  .bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--ok));border-radius:6px;transition:width .4s}
-  .fmeta{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--muted)}
-  .badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:700}
-  .badge.open{background:#3a2a12;color:var(--warn)} .badge.done{background:#0f2c1c;color:var(--ok)}
-  .laststamp{color:var(--dim);font-size:11px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .avatar{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:11px;color:#0b1220;flex:none}
 
-  /* event log */
-  .log{max-height:520px;overflow:auto}
-  .ev{display:flex;gap:11px;padding:10px 4px;border-bottom:1px solid #1c2330}
+  /* hierarchy / org chart */
+  .org{display:flex;flex-direction:column;align-items:center;gap:0;padding:4px 0 2px}
+  .node{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:7px 11px;text-align:center;min-width:130px}
+  .node .r{font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--accent2)}
+  .node .n{font-weight:700;font-size:13px}
+  .node.command{background:linear-gradient(180deg,#1a2740,#141d30);border-color:#294066}
+  .connector{width:2px;height:14px;background:var(--line)}
+  .row2{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .branch{display:flex;flex-direction:column;align-items:center}
+
+  /* objectives */
+  .obj{display:flex;gap:9px;padding:8px 4px;border-bottom:1px solid #1c2330;align-items:flex-start}
+  .obj:last-child{border-bottom:0}
+  .obj .num{width:20px;height:20px;border-radius:50%;background:#123a5c;color:#bfe0ff;display:grid;place-items:center;font-size:11px;font-weight:800;flex:none}
+  .addrow{display:flex;gap:8px;margin-top:10px}
+  .addrow input{flex:1;background:var(--chip);border:1px solid var(--line);color:var(--ink);padding:8px 10px;border-radius:8px}
+  .btn{background:var(--accent);color:#fff;border:0;padding:8px 14px;border-radius:8px;font-weight:600;cursor:pointer}
+  .btn.sm{padding:5px 10px;font-size:12px}
+  .lock{color:var(--dim);font-size:12px;margin-top:8px}
+
+  /* resources */
+  .res{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid #1c2330}
+  .res:last-child{border-bottom:0}
+  .res .rn{font-weight:600}
+  .res .rf{font-size:11px;color:var(--muted)}
+  .res .st{margin-left:auto;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;cursor:pointer;white-space:nowrap;user-select:none}
+  .s-on{background:#0f2c1c;color:#4ade80;box-shadow:inset 0 0 0 1px #1f5738}
+  .s-mob{background:#3a2a12;color:#f5b942;box-shadow:inset 0 0 0 1px #6b4e1a}
+  .s-stag{background:#12233c;color:#7fb0ea;box-shadow:inset 0 0 0 1px #274a72}
+  .s-out{background:#2a2f38;color:#9aa6b5;box-shadow:inset 0 0 0 1px #3a424e}
+  .dotc{width:9px;height:9px;border-radius:50%;flex:none}
+
+  /* activity log */
+  .log{max-height:440px;overflow:auto}
+  .ev{display:flex;gap:10px;padding:9px 4px 9px 10px;border-bottom:1px solid #1c2330;border-left:3px solid transparent}
   .ev:last-child{border-bottom:0}
-  .ev .t{color:var(--dim);font-variant-numeric:tabular-nums;font-size:12px;white-space:nowrap;padding-top:1px}
-  .ev .who{margin:0}
-  .ev .txt{flex:1}
-  .ev .txt b{color:var(--ink)}
-  .ev .tag{font-size:11px;color:var(--accent2);background:#12233c;padding:1px 7px;border-radius:6px;margin-left:6px}
+  .ev .t{color:var(--dim);font-variant-numeric:tabular-nums;font-size:11px;white-space:nowrap;padding-top:2px}
+  .ev .txt{flex:1}.ev .txt b{color:var(--ink)}
+  .ev .tag{font-size:10px;padding:1px 7px;border-radius:6px;margin-left:6px;font-weight:700}
   .ev.new{animation:flash 1.2s ease-out}
   @keyframes flash{0%{background:#1b2c1c}100%{background:transparent}}
 
-  /* outstanding */
-  .task{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid #1c2330}
-  .task:last-child{border-bottom:0}
-  .task .fn{font-size:11px;color:var(--accent2);background:#12233c;padding:1px 7px;border-radius:6px;white-space:nowrap}
-  .task .owner{color:var(--muted);font-size:12px;margin-left:auto;white-space:nowrap}
+  /* map */
+  .map{height:230px;border-radius:9px;position:relative;overflow:hidden;border:1px solid var(--line);
+    background:linear-gradient(135deg,#0e1b26,#0c1720);display:grid;place-items:center;text-align:center}
+  .map .grid{position:absolute;inset:0;background-image:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff08 1px,transparent 1px);background-size:26px 26px}
+  .map .pin{position:absolute;transform:translate(-50%,-100%);font-size:20px;filter:drop-shadow(0 2px 3px #000)}
+  .map .mid{position:relative;z-index:2;padding:14px}
+  .map .mid .btn{margin-top:8px}
+  .maphint{color:var(--dim);font-size:11px;margin-top:8px}
+
+  /* outstanding by function */
+  .obf{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid #1c2330}
+  .obf:last-child{border-bottom:0}
+  .obf .fn{font-weight:600}
+  .obf .n{margin-left:auto;font-weight:800;font-size:16px}
+  .barmini{height:6px;background:#0e1420;border-radius:6px;overflow:hidden;margin-top:4px}
+  .barmini > div{height:100%;border-radius:6px}
+
+  /* assignments */
+  .asg{display:flex;align-items:flex-start;gap:9px;padding:9px 4px;border-bottom:1px solid #1c2330}
+  .asg:last-child{border-bottom:0}
+  .asg input[type=checkbox]{width:18px;height:18px;accent-color:var(--ok);cursor:pointer;margin-top:1px;flex:none}
+  .asg .meta{font-size:11px;color:var(--muted);margin-top:2px}
+  .asg.done label{color:var(--dim);text-decoration:line-through}
   .pri{font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;white-space:nowrap;letter-spacing:.4px}
   .pri.p1{background:#3a1414;color:#ff6b6b;box-shadow:inset 0 0 0 1px #7a2a2a}
   .pri.p2{background:#3a2a12;color:#f5b942;box-shadow:inset 0 0 0 1px #6b4e1a}
   .pri.p3{background:#1c2735;color:#8fb3e0;box-shadow:inset 0 0 0 1px #2f4763}
-  .checklist .item .pri{margin-left:auto}
-  .grouphdr{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--dim);margin:12px 0 4px;padding-left:2px}
+  .grouphdr{font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--dim);margin:10px 0 3px;padding-left:2px}
   .grouphdr:first-child{margin-top:0}
 
-  /* function checklist view */
+  /* checklist tab */
+  .funcpick{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .funcpick button{background:var(--chip);border:1px solid var(--line);color:var(--muted);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:600}
+  .funcpick button.active{color:var(--ink)}
   .checklist .item{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid #1c2330}
   .checklist .item:last-child{border-bottom:0}
   .checklist input[type=checkbox]{width:20px;height:20px;accent-color:var(--ok);cursor:pointer;flex:none}
   .checklist .item.done label{color:var(--dim);text-decoration:line-through}
   .checklist label{cursor:pointer;flex:1}
-  .noteRow{display:flex;gap:10px;margin-top:14px}
-  .noteRow input{flex:1;background:var(--chip);border:1px solid var(--line);color:var(--ink);padding:9px 12px;border-radius:8px}
-  .btn{background:var(--accent);color:#fff;border:0;padding:9px 16px;border-radius:8px;font-weight:600;cursor:pointer}
-  .btn.ghost{background:var(--chip);color:var(--ink);border:1px solid var(--line)}
-  .funcpick{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-  .funcpick button{background:var(--chip);border:1px solid var(--line);color:var(--muted);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:600}
-  .funcpick button.active{background:var(--panel2);color:var(--ink);border-color:var(--accent)}
+  .checklist .pri{margin-left:auto}
+  .grid2{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}}
+  .footer{color:var(--dim);font-size:12px;text-align:center;padding:20px}
   .hint{color:var(--dim);font-size:12px;margin-top:10px}
-  .footer{color:var(--dim);font-size:12px;text-align:center;padding:24px}
-  .empty{color:var(--dim);padding:18px 4px;text-align:center;font-size:13px}
 </style>
 </head>
 <body>
@@ -139,11 +149,18 @@
     <div class="brand"><span class="dot"></span> Ops&nbsp;Command <small>· Collaborative Task Dashboard</small></div>
     <div class="who">
       <span class="live"><span class="dot"></span> live sync</span>
-      <span class="avatar" id="meAvatar">–</span>
       <label style="color:var(--muted);font-size:12px">You are:</label>
       <select id="mePick"></select>
     </div>
   </header>
+
+  <div class="strip">
+    <span class="lbl">Incident / Project ID</span>
+    <input id="projId" value="INC-2026-0814" />
+    <span class="lbl" style="margin-left:6px">Status</span>
+    <span style="font-weight:700;color:#ff9d6b">● ACTIVE</span>
+    <div class="clock" id="clock">--:--:--<small id="cdate"></small></div>
+  </div>
 
   <nav class="tabs">
     <button data-tab="dash" class="active">Central Dashboard</button>
@@ -153,25 +170,56 @@
   <main>
     <!-- DASHBOARD -->
     <section id="tab-dash">
-      <div class="kpis" id="kpis"></div>
-      <div class="grid">
-        <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="board">
+        <!-- LEFT -->
+        <div class="col">
           <div class="card">
-            <h3>⚠ Outstanding Tasks — by priority (all functions)</h3>
-            <div class="body" id="outstanding"></div>
+            <h3>Organisation (Hierarchy)</h3>
+            <div class="body"><div class="org" id="org"></div></div>
           </div>
-          <div class="card hier">
-            <h3>Function Hierarchy &amp; Status</h3>
+          <div class="card">
+            <h3>Objectives <span class="count" id="objCount"></span></h3>
+            <div class="body" id="objectives"></div>
+          </div>
+          <div class="card">
+            <h3>Resource Summary <span class="count" id="resCount"></span></h3>
+            <div class="body" id="resources"></div>
+          </div>
+        </div>
+        <!-- MIDDLE -->
+        <div class="col">
+          <div class="card">
+            <h3>Activity Log <span class="count" id="logCount"></span></h3>
+            <div class="body log" id="log"></div>
+          </div>
+          <div class="card">
+            <h3>Map / GIS</h3>
             <div class="body">
-              <div class="command" id="command"></div>
-              <div class="funcs" id="funcs"></div>
-              <div class="hint">Tip: click any function to open its checklist. Open this page in a second tab and change roles to see live multi-user sync.</div>
+              <div class="map">
+                <div class="grid"></div>
+                <span class="pin" style="left:38%;top:46%">📍</span>
+                <span class="pin" style="left:60%;top:60%">🚒</span>
+                <span class="pin" style="left:52%;top:34%">🚑</span>
+                <div class="mid">
+                  <div style="font-weight:700">Incident location map</div>
+                  <div style="color:var(--muted);font-size:12px">Embed a live map or your GIS here</div>
+                  <button class="btn sm" onclick="alert('In the real build this embeds a live map / your GIS, or opens it in a new tab — configurable per client to suit ICT policy.')">Open map / GIS ▸</button>
+                </div>
+              </div>
+              <div class="maphint">Configurable per client: embedded map, launch-link, or full GIS integration (to suit ICT policy).</div>
             </div>
           </div>
         </div>
-        <div class="card">
-          <h3>Live Event Log</h3>
-          <div class="body log" id="log"></div>
+        <!-- RIGHT -->
+        <div class="col">
+          <div class="card">
+            <h3>Outstanding Tasks — by function</h3>
+            <div class="body" id="outByFn"></div>
+          </div>
+          <div class="card">
+            <h3>Assignment List — priority order <span class="count" id="asgCount"></span></h3>
+            <div class="body" id="assignments"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -179,7 +227,7 @@
     <!-- WORK -->
     <section id="tab-work" style="display:none">
       <div class="funcpick" id="funcpick"></div>
-      <div class="grid">
+      <div class="grid2">
         <div class="card checklist">
           <h3 id="clTitle">Checklist</h3>
           <div class="body" id="checklist"></div>
@@ -190,177 +238,252 @@
         </div>
       </div>
     </section>
-    <div class="footer">Interactive demo · real-time sync across tabs via BroadcastChannel. Production build uses a live server (WebSockets) so remote teammates sync in real time.</div>
+    <div class="footer">Interactive demo · live sync across tabs (BroadcastChannel). Production build uses a live server (WebSockets) so remote teammates sync in real time. Layout based on your sketch.</div>
   </main>
 </div>
 
 <script>
-/* ---------------- seed data ---------------- */
-// priorities: 1=High (critical), 2=Medium, 3=Low
+/* ---------- function colours ---------- */
+const FCOL={fire:"#ef4444",medical:"#22c55e",security:"#3b82f6",logistics:"#f59e0b",planning:"#a78bfa"};
+const PRI={1:{label:"HIGH",cls:"p1"},2:{label:"MED",cls:"p2"},3:{label:"LOW",cls:"p3"}};
+const STAT={"on-scene":{label:"On scene",cls:"s-on",c:"#22c55e"},"mobile":{label:"Mobile",cls:"s-mob",c:"#f59e0b"},
+  "staging":{label:"At staging",cls:"s-stag",c:"#3b82f6"},"out":{label:"Out of service",cls:"s-out",c:"#8b98a9"}};
+const STAT_ORDER=["on-scene","mobile","staging","out"];
+
+/* ---------- seed ---------- */
 const SEED = {
+  projectId:"INC-2026-0814",
   command:{name:"Incident Commander", lead:"A. Reyes"},
   functions:[
     {id:"fire", name:"Fire", lead:"J. Patel",
-      checklist:[["Confirm fire ground perimeter",1],["Deploy suppression crews",1],["Establish water supply",2],["Check for structural collapse risk",1],["Log resource requests",3]]},
+      checklist:[["Confirm fire ground perimeter",1],["Deploy suppression crews",1],["Establish water supply",2],["Check structural collapse risk",1],["Log resource requests",3]]},
     {id:"medical", name:"Medical", lead:"S. Larsen",
       checklist:[["Set up triage point",1],["Confirm ambulance staging",1],["Report casualty count",1],["Request additional medics",2],["Update hospital liaison",2]]},
     {id:"security", name:"Security", lead:"M. Okoro",
       checklist:[["Establish exclusion zone",1],["Control site access points",2],["Brief team on hazards",2],["Coordinate crowd management",2],["Record security incidents",3]]},
     {id:"logistics", name:"Logistics", lead:"D. Nguyen",
-      checklist:[["Confirm equipment inventory",2],["Arrange transport",2],["Secure staging area",1],["Allocate resources to functions",2],["Track outstanding supply requests",3]]},
+      checklist:[["Confirm equipment inventory",2],["Arrange transport",2],["Secure staging area",1],["Allocate resources",2],["Track supply requests",3]]},
     {id:"planning", name:"Planning", lead:"K. Adeyemi",
-      checklist:[["Compile situation report",1],["Set operational objectives",2],["Forecast resource needs",2],["Track task progress across functions",2],["Prepare next-shift briefing",3]]},
+      checklist:[["Compile situation report",1],["Set operational objectives",2],["Forecast resource needs",2],["Track task progress",2],["Prepare next-shift briefing",3]]},
+  ],
+  objectives:[
+    {id:"o1",text:"Preserve life and ensure casualty care",by:"A. Reyes"},
+    {id:"o2",text:"Prevent escalation of the incident",by:"A. Reyes"},
+    {id:"o3",text:"Protect property and the environment",by:"A. Reyes"},
+  ],
+  resources:[
+    {id:"r1",name:"Engine 1",fn:"fire",status:"on-scene"},
+    {id:"r2",name:"Rescue Unit 2",fn:"fire",status:"staging"},
+    {id:"r3",name:"Ambulance 7",fn:"medical",status:"mobile"},
+    {id:"r4",name:"Patrol A",fn:"security",status:"on-scene"},
+    {id:"r5",name:"Supply Truck",fn:"logistics",status:"staging"},
+  ],
+  assignments:[
+    {id:"a1",text:"Recon north sector for trapped persons",to:"Rescue Unit 2",fn:"fire",pri:1,done:false},
+    {id:"a2",text:"Establish casualty clearing station",to:"Ambulance 7",fn:"medical",pri:1,done:false},
+    {id:"a3",text:"Cordon east access road",to:"Patrol A",fn:"security",pri:2,done:false},
+    {id:"a4",text:"Deliver additional BA sets to fire ground",to:"Supply Truck",fn:"logistics",pri:2,done:false},
+    {id:"a5",text:"Draft situation report for next shift",to:"K. Adeyemi",fn:"planning",pri:3,done:false},
   ],
   events:[]
 };
-const PRI={1:{label:"HIGH",cls:"p1"},2:{label:"MED",cls:"p2"},3:{label:"LOW",cls:"p3"}};
-
-const PEOPLE = [{id:"cmd",name:"A. Reyes",role:"Incident Coordinator"}]
+const PEOPLE=[{id:"cmd",name:"A. Reyes",role:"Incident Commander"}]
   .concat(SEED.functions.map(f=>({id:f.id,name:f.lead,role:f.name})));
 
-/* ---------------- state / storage ---------------- */
-const KEY="opsdash.v2";
-const bc = ("BroadcastChannel" in window) ? new BroadcastChannel("opsdash") : null;
-
+/* ---------- storage / realtime ---------- */
+const KEY="opsdash.v3";
+const bc=("BroadcastChannel" in window)?new BroadcastChannel("opsdash"):null;
+function uid(){return Math.random().toString(36).slice(2,9)+performance.now().toString(36).replace('.','');}
 function load(){
-  try{const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.functions) return s;}catch(e){}
+  try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.functions)return s;}catch(e){}
   const st=structuredClone(SEED);
   st.functions.forEach(f=>f.checklist=f.checklist.map((t,i)=>({id:f.id+"-"+i,text:t[0],pri:t[1],done:false})));
-  st.events=[{id:uid(),ts:Date.now()-1000*60*7,person:"A. Reyes",fn:"Command",text:"Incident declared — functions activated"}];
+  st.events=[{id:uid(),ts:Date.now()-1000*60*7,person:"A. Reyes",fn:"planning",fnName:"Command",text:"Incident declared — functions activated"}];
   return st;
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
-function broadcast(){save(); if(bc) bc.postMessage({t:Date.now()});}
-let lastEventId=null;
-function uid(){return Math.random().toString(36).slice(2,9)+performance.now().toString(36).replace('.','');}
-
+function broadcast(){save();if(bc)bc.postMessage({t:1});}
 let state=load();
-let me = PEOPLE[1]; // default to a function lead
-let activeFunc = state.functions[0].id;
+let me=PEOPLE[1];
+let activeFunc=state.functions[0].id;
+let lastEventId=null;
 
-/* ---------------- helpers ---------------- */
+/* ---------- helpers ---------- */
 const AV=["#60a5fa","#f59e0b","#22c55e","#ef4444","#a78bfa","#f472b6"];
 function initials(n){return n.split(/[\s.]+/).filter(Boolean).map(x=>x[0]).slice(0,2).join("").toUpperCase();}
 function colorFor(n){let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))>>>0;return AV[h%AV.length];}
 function avatar(name){return `<span class="avatar" style="background:${colorFor(name)}">${initials(name)}</span>`;}
-function ago(ts){const s=(Date.now()-ts)/1000;if(s<60)return Math.floor(s)+"s ago";if(s<3600)return Math.floor(s/60)+"m ago";return Math.floor(s/3600)+"h ago";}
-function hhmm(ts){const d=new Date(ts);return d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});}
-function fn(id){return state.functions.find(f=>f.id===id);}
-function pct(f){const d=f.checklist.filter(i=>i.done).length;return Math.round(d/f.checklist.length*100);}
+function hhmm(ts){return new Date(ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+function fnById(id){return state.functions.find(f=>f.id===id);}
+function fnByName(nm){return state.functions.find(f=>f.name===nm);}
 function openCount(f){return f.checklist.filter(i=>!i.done).length;}
-function lastEventFor(name){const e=[...state.events].reverse().find(e=>e.fn===name);return e;}
+function fcol(id){return FCOL[id]||"#8b98a9";}
+function isCmd(){return me.id==="cmd";}
 
-function logEvent(text, fnName){
-  const e={id:uid(),ts:Date.now(),person:me.name,fn:fnName,text};
-  state.events.push(e); lastEventId=e.id; broadcast(); render();
+function logEvent(text,fnId){
+  const f=fnById(fnId);
+  state.events.push({id:uid(),ts:Date.now(),person:me.name,fn:fnId,fnName:f?f.name:"Command",text});
+  lastEventId=state.events[state.events.length-1].id;broadcast();render();
 }
 
-/* ---------------- render ---------------- */
-function renderKpis(){
-  const total=state.functions.reduce((a,f)=>a+f.checklist.length,0);
-  const done=state.functions.reduce((a,f)=>a+f.checklist.filter(i=>i.done).length,0);
-  const open=total-done;
-  const overall=Math.round(done/total*100);
-  document.getElementById('kpis').innerHTML=`
-    <div class="kpi"><div class="label">Overall progress</div><div class="val">${overall}%</div><div class="sub">${done} of ${total} steps complete</div></div>
-    <div class="kpi warn"><div class="label">Outstanding tasks</div><div class="val">${open}</div><div class="sub">across ${state.functions.length} functions</div></div>
-    <div class="kpi"><div class="label">Active functions</div><div class="val">${state.functions.length}</div><div class="sub">${PEOPLE.length} people on duty</div></div>
-    <div class="kpi good"><div class="label">Events logged</div><div class="val">${state.events.length}</div><div class="sub">last ${state.events.length?ago(state.events[state.events.length-1].ts):'—'}</div></div>`;
+/* ---------- renders ---------- */
+function renderOrg(){
+  const c=state.command;const fns=state.functions;
+  document.getElementById('org').innerHTML=`
+    <div class="node command"><div class="r">Incident Commander</div><div class="n">${c.lead}</div></div>
+    <div class="connector"></div>
+    <div class="row2">${fns.map(f=>`
+      <div class="branch"><div class="node" style="border-top:3px solid ${fcol(f.id)}">
+        <div class="r" style="color:${fcol(f.id)}">${f.name}</div><div class="n">${f.lead}</div></div></div>`).join("")}</div>`;
 }
-function renderHier(){
-  const c=state.command||SEED.command;
-  document.getElementById('command').innerHTML=`${avatar(c.lead)}
-    <div><div style="font-weight:750">${c.name}</div><div class="lead">${c.lead} · coordinating all functions</div></div>
-    <span class="badge done" style="margin-left:auto">COMMAND</span>`;
-  document.getElementById('funcs').innerHTML=state.functions.map(f=>{
-    const p=pct(f),o=openCount(f),le=lastEventFor(f.name);
-    return `<div class="fcard" data-open="${f.id}">
-      <div class="top">${avatar(f.lead)}<div><div class="name">${f.name}</div><div class="lead">${f.lead}</div></div>
-        <span class="badge ${o?'open':'done'}" style="margin-left:auto">${o?o+' open':'done'}</span></div>
-      <div class="bar-wrap"><div class="bar-fill" style="width:${p}%"></div></div>
-      <div class="fmeta"><span>${p}% complete</span><span>${f.checklist.length-o}/${f.checklist.length}</span></div>
-      <div class="laststamp">${le?('● '+le.text+' · '+ago(le.ts)):'no activity yet'}</div>
-    </div>`;
-  }).join("");
-  document.querySelectorAll('.fcard').forEach(el=>el.onclick=()=>{activeFunc=el.dataset.open;switchTab('work');});
-}
-function renderOutstanding(){
-  const rows=[];
-  state.functions.forEach(f=>f.checklist.filter(i=>!i.done).forEach(i=>rows.push({f,i})));
-  const el=document.getElementById('outstanding');
-  if(!rows.length){el.innerHTML=`<div class="empty">🎉 All tasks complete across every function.</div>`;return;}
-  rows.sort((a,b)=>(a.i.pri-b.i.pri)); // High priority first
-  let html="",curPri=null;
-  rows.forEach(({f,i})=>{
-    if(i.pri!==curPri){curPri=i.pri;html+=`<div class="grouphdr">${PRI[i.pri].label} priority</div>`;}
-    html+=`<div class="task"><span class="pri ${PRI[i.pri].cls}">${PRI[i.pri].label}</span>
-      <span class="fn">${f.name}</span><span>${i.text}</span><span class="owner">${f.lead}</span></div>`;
-  });
+function renderObjectives(){
+  document.getElementById('objCount').textContent=state.objectives.length;
+  const el=document.getElementById('objectives');
+  let html=state.objectives.map((o,i)=>`<div class="obj"><span class="num">${i+1}</span>
+    <div><div>${o.text}</div><div class="meta" style="color:var(--dim);font-size:11px">set by ${o.by}</div></div></div>`).join("")
+    || `<div class="empty">No objectives set yet.</div>`;
+  if(isCmd()){
+    html+=`<div class="addrow"><input id="objInput" placeholder="Add an objective…">
+      <button class="btn" id="objBtn">Add</button></div>`;
+  }else{
+    html+=`<div class="lock">🔒 Only the Incident Commander can set objectives. Switch role (top-right) to "A. Reyes" to try.</div>`;
+  }
   el.innerHTML=html;
+  if(isCmd()){
+    document.getElementById('objBtn').onclick=addObj;
+    document.getElementById('objInput').addEventListener('keydown',e=>{if(e.key==='Enter')addObj();});
+  }
+}
+function addObj(){
+  const inp=document.getElementById('objInput');const v=inp.value.trim();if(!v)return;
+  state.objectives.push({id:uid(),text:v,by:me.name});
+  logEvent('🎯 set objective: “'+v+'”','planning');inp.value='';
+}
+function renderResources(){
+  document.getElementById('resCount').textContent=state.resources.length;
+  const el=document.getElementById('resources');
+  el.innerHTML=state.resources.map(r=>{
+    const s=STAT[r.status];const f=fnById(r.fn);
+    return `<div class="res"><span class="dotc" style="background:${fcol(r.fn)}"></span>
+      <div><div class="rn">${r.name}</div><div class="rf">${f?f.name:''}</div></div>
+      <span class="st ${s.cls}" data-res="${r.id}" title="Click to change status">● ${s.label}</span></div>`;
+  }).join("");
+  el.querySelectorAll('.st').forEach(b=>b.onclick=()=>{
+    const r=state.resources.find(x=>x.id===b.dataset.res);
+    const idx=STAT_ORDER.indexOf(r.status);r.status=STAT_ORDER[(idx+1)%STAT_ORDER.length];
+    logEvent('🚩 '+r.name+' now '+STAT[r.status].label,r.fn);
+  });
 }
 function renderLog(){
+  document.getElementById('logCount').textContent=state.events.length;
   const el=document.getElementById('log');
-  const evs=[...state.events].reverse();
-  el.innerHTML=evs.map(e=>`<div class="ev ${e.id===lastEventId?'new':''}">
-    <span class="t">${hhmm(e.ts)}</span>${avatar(e.person)}
-    <span class="txt"><b>${e.person}</b> ${e.text}<span class="tag">${e.fn}</span></span></div>`).join("");
+  el.innerHTML=[...state.events].reverse().map(e=>{
+    const col=fcol(e.fn);
+    return `<div class="ev ${e.id===lastEventId?'new':''}" style="border-left-color:${col}">
+      <span class="t">${hhmm(e.ts)}</span>${avatar(e.person)}
+      <span class="txt"><b>${e.person}</b> ${e.text}
+        <span class="tag" style="background:${col}22;color:${col}">${e.fnName}</span></span></div>`;
+  }).join("");
+}
+function renderOutByFn(){
+  const el=document.getElementById('outByFn');
+  el.innerHTML=state.functions.map(f=>{
+    const o=openCount(f),tot=f.checklist.length,pctDone=Math.round((tot-o)/tot*100);
+    return `<div class="obf"><span class="dotc" style="background:${fcol(f.id)}"></span>
+      <div style="flex:1"><span class="fn">${f.name}</span>
+        <div class="barmini"><div style="width:${pctDone}%;background:${fcol(f.id)}"></div></div></div>
+      <span class="n" style="color:${o?'var(--warn)':'var(--ok)'}">${o}</span></div>`;
+  }).join("");
+}
+function renderAssignments(){
+  const open=state.assignments.filter(a=>!a.done);
+  document.getElementById('asgCount').textContent=open.length+" open";
+  const el=document.getElementById('assignments');
+  const sorted=[...state.assignments].sort((a,b)=>(a.done-b.done)||(a.pri-b.pri));
+  let html="",cur=null;
+  sorted.filter(a=>!a.done).forEach(a=>{
+    if(a.pri!==cur){cur=a.pri;html+=`<div class="grouphdr">${PRI[a.pri].label} priority</div>`;}
+    const f=fnById(a.fn);
+    html+=`<div class="asg"><input type="checkbox" data-asg="${a.id}">
+      <div style="flex:1"><label>${a.text}</label>
+        <div class="meta">→ ${a.to} <span class="tag" style="background:${fcol(a.fn)}22;color:${fcol(a.fn)};padding:1px 6px;border-radius:5px">${f?f.name:''}</span></div></div>
+      <span class="pri ${PRI[a.pri].cls}">${PRI[a.pri].label}</span></div>`;
+  });
+  const done=sorted.filter(a=>a.done);
+  if(done.length){html+=`<div class="grouphdr">Completed</div>`;
+    done.forEach(a=>{html+=`<div class="asg done"><input type="checkbox" checked data-asg="${a.id}">
+      <div style="flex:1"><label>${a.text}</label><div class="meta">→ ${a.to}</div></div></div>`;});}
+  el.innerHTML=html||`<div class="empty">No assignments.</div>`;
+  el.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{
+    const a=state.assignments.find(x=>x.id===cb.dataset.asg);a.done=cb.checked;
+    logEvent((cb.checked?'✅ completed assignment':'↩ re-opened assignment')+': “'+a.text+'”',a.fn);
+  });
 }
 function renderChecklist(){
-  const f=fn(activeFunc);
+  const f=fnById(activeFunc);
   document.getElementById('clTitle').textContent=f.name+" — "+f.lead;
   document.getElementById('funcpick').innerHTML=state.functions.map(x=>
-    `<button data-f="${x.id}" class="${x.id===activeFunc?'active':''}">${x.name} <span style="opacity:.6">(${openCount(x)})</span></button>`).join("");
+    `<button data-f="${x.id}" class="${x.id===activeFunc?'active':''}" style="${x.id===activeFunc?'border-color:'+fcol(x.id)+';color:var(--ink)':''}">
+      <span style="color:${fcol(x.id)}">●</span> ${x.name} (${openCount(x)})</button>`).join("");
   document.querySelectorAll('#funcpick button').forEach(b=>b.onclick=()=>{activeFunc=b.dataset.f;render();});
   document.getElementById('checklist').innerHTML=
     f.checklist.map(i=>`<div class="item ${i.done?'done':''}">
       <input type="checkbox" ${i.done?'checked':''} data-item="${i.id}">
       <label>${i.text}</label><span class="pri ${PRI[i.pri].cls}">${PRI[i.pri].label}</span></div>`).join("")
-    +`<div class="noteRow"><input id="noteInput" placeholder="Log a note or update to the event log…">
+    +`<div class="addrow"><input id="noteInput" placeholder="Log a note / update to the activity log…">
         <button class="btn" id="noteBtn">Log event</button></div>
-      <div class="hint">Ticking an item auto-logs a timestamped event under your name. Notes post straight to the central event log.</div>`;
+      <div class="hint">Ticking an item auto-logs a timestamped, colour-coded event. Notes post straight to the central log.</div>`;
   document.querySelectorAll('#checklist input[type=checkbox]').forEach(cb=>cb.onchange=()=>{
-    const item=f.checklist.find(x=>x.id===cb.dataset.item); item.done=cb.checked;
-    logEvent((cb.checked?'✔ completed':'↩ re-opened')+' “'+item.text+'”', f.name);
+    const item=f.checklist.find(x=>x.id===cb.dataset.item);item.done=cb.checked;
+    logEvent((cb.checked?'✔ completed':'↩ re-opened')+' “'+item.text+'”',f.id);
   });
   document.getElementById('noteBtn').onclick=postNote;
   document.getElementById('noteInput').addEventListener('keydown',e=>{if(e.key==='Enter')postNote();});
-  // func log
-  document.getElementById('funcLog').innerHTML=[...state.events].reverse().filter(e=>e.fn===f.name)
-    .map(e=>`<div class="ev"><span class="t">${hhmm(e.ts)}</span>${avatar(e.person)}
-      <span class="txt"><b>${e.person}</b> ${e.text}</span></div>`).join("") || `<div class="empty">No activity for this function yet.</div>`;
+  document.getElementById('funcLog').innerHTML=[...state.events].reverse().filter(e=>e.fn===f.id)
+    .map(e=>`<div class="ev" style="border-left-color:${fcol(f.id)}"><span class="t">${hhmm(e.ts)}</span>${avatar(e.person)}
+      <span class="txt"><b>${e.person}</b> ${e.text}</span></div>`).join("")||`<div class="empty">No activity yet.</div>`;
 }
-function postNote(){
-  const inp=document.getElementById('noteInput');const v=inp.value.trim();if(!v)return;
-  logEvent('📝 '+v, fn(activeFunc).name); inp.value='';
-}
+function postNote(){const inp=document.getElementById('noteInput');const v=inp.value.trim();if(!v)return;logEvent('📝 '+v,activeFunc);inp.value='';}
+
 function renderWho(){
   const sel=document.getElementById('mePick');
   sel.innerHTML=PEOPLE.map(p=>`<option value="${p.id}" ${p.id===me.id?'selected':''}>${p.name} — ${p.role}</option>`).join("");
-  sel.onchange=()=>{me=PEOPLE.find(p=>p.id===sel.value); if(me.id!=='cmd')activeFunc=me.id; document.getElementById('meAvatar').outerHTML=avatar(me.name).replace('class="avatar"','id="meAvatar" class="avatar"');};
-  document.getElementById('meAvatar').outerHTML=avatar(me.name).replace('class="avatar"','id="meAvatar" class="avatar"');
+  sel.onchange=()=>{me=PEOPLE.find(p=>p.id===sel.value);if(me.id!=='cmd')activeFunc=me.id;render();};
+}
+function renderStrip(){
+  const inp=document.getElementById('projId');
+  if(document.activeElement!==inp)inp.value=state.projectId||"INC-2026-0814";
+  inp.onchange=()=>{state.projectId=inp.value;broadcast();};
 }
 function render(){
-  renderKpis();renderHier();renderOutstanding();renderLog();
-  if(document.getElementById('tab-work').style.display!=='none') renderChecklist();
+  renderStrip();renderOrg();renderObjectives();renderResources();renderLog();renderOutByFn();renderAssignments();
+  if(document.getElementById('tab-work').style.display!=='none')renderChecklist();
   lastEventId=null;
 }
 
-/* ---------------- tabs ---------------- */
+/* ---------- tabs ---------- */
 function switchTab(t){
   document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
-  document.getElementById('tab-dash').style.display = t==='dash'?'':'none';
-  document.getElementById('tab-work').style.display = t==='work'?'':'none';
-  render(); if(t==='work') renderChecklist();
+  document.getElementById('tab-dash').style.display=t==='dash'?'':'none';
+  document.getElementById('tab-work').style.display=t==='work'?'':'none';
+  render();if(t==='work')renderChecklist();
 }
 document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
 
-/* ---------------- realtime ---------------- */
-if(bc) bc.onmessage=()=>{state=load();render();};
-window.addEventListener('storage',e=>{if(e.key===KEY){state=load();render();}});
-setInterval(()=>{ if(document.getElementById('tab-dash').style.display!=='none'){renderHier();renderLog();renderKpis();} },15000); // refresh "x ago"
+/* ---------- clock ---------- */
+function tick(){
+  const d=new Date();
+  document.getElementById('clock').firstChild.nodeValue=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('cdate').textContent=d.toLocaleDateString([],{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+}
 
-/* ---------------- boot ---------------- */
-renderWho();render();
+/* ---------- realtime ---------- */
+if(bc)bc.onmessage=()=>{state=load();render();};
+window.addEventListener('storage',e=>{if(e.key===KEY){state=load();render();}});
+setInterval(()=>{tick();if(document.getElementById('tab-dash').style.display!=='none'){renderLog();}},1000);
+
+/* ---------- boot ---------- */
+renderWho();tick();render();
 </script>
 </body>
 </html>
