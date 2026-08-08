@@ -33,8 +33,16 @@
   .strip{display:flex;align-items:center;gap:18px;padding:8px 20px;background:linear-gradient(90deg,#123a5c,#0f2740);border-bottom:1px solid #24405e;color:#dCE9F7}
   .strip .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:#9fc2e0}
   .strip input{background:#0e2438;border:1px solid #2b4d6b;color:#eaf3fb;padding:5px 9px;border-radius:7px;font-weight:700;font-size:14px;width:160px}
-  .strip .clock{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;letter-spacing:.5px}
+  .strip .clock{font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;letter-spacing:.5px}
   .strip .clock small{display:block;font-weight:500;font-size:11px;color:#9fc2e0;text-align:right}
+  .strip .extog{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:12px;color:#cfe3f5;cursor:pointer;user-select:none;background:#0e2438;border:1px solid #2b4d6b;padding:5px 10px;border-radius:7px}
+  .strip .extog input{width:auto}
+  .exbanner{background:repeating-linear-gradient(45deg,#3a2a08,#3a2a08 14px,#2c2006 14px,#2c2006 28px);
+    color:#ffd27a;font-weight:800;letter-spacing:1px;text-align:center;padding:7px 12px;border-bottom:1px solid #6b4e1a;font-size:13px}
+  .injectbar{display:flex;gap:8px;padding:8px 14px;border-bottom:1px solid var(--line);background:#1a1508}
+  .injectbar input{flex:1;background:var(--chip);border:1px solid var(--line);color:var(--ink);padding:7px 10px;border-radius:8px}
+  .ev.inject{background:#1c1608}
+  .ev.inject .txt b{color:#f5b942}
 
   nav.tabs{display:flex;gap:4px;padding:8px 20px;border-bottom:1px solid var(--line);background:var(--bg)}
   nav.tabs button{background:transparent;border:0;color:var(--muted);padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
@@ -163,9 +171,11 @@
     <span class="lbl">Incident / Project ID</span>
     <input id="projId" value="INC-2026-0814" />
     <span class="lbl" style="margin-left:6px">Status</span>
-    <span style="font-weight:700;color:#ff9d6b">● ACTIVE</span>
+    <span style="font-weight:700;color:#ff9d6b" id="statusTxt">● ACTIVE</span>
+    <label class="extog" title="Run this as a training tabletop exercise"><input type="checkbox" id="exToggle"> 🎓 Exercise mode</label>
     <div class="clock" id="clock">--:--:--<small id="cdate"></small></div>
   </div>
+  <div class="exbanner" id="exBanner" style="display:none">⚠ EXERCISE — TRAINING ONLY · simulated incident, not a live response · EXERCISE ⚠</div>
 
   <nav class="tabs">
     <button data-tab="dash" class="active">Central Dashboard</button>
@@ -195,7 +205,13 @@
         <!-- MIDDLE -->
         <div class="col">
           <div class="card">
-            <h3>Activity Log <span class="count" id="logCount"></span></h3>
+            <h3>Activity Log <span class="count" id="logCount" style="margin-left:8px"></span>
+              <button class="btn sm ghostbtn" id="exportLog" style="margin-left:auto">Export log ⬇</button></h3>
+            <div class="injectbar" id="injectBar" style="display:none">
+              <input id="injectInput" placeholder="Facilitator inject — push a scenario event…">
+              <button class="btn sm" id="injectBtn">Inject</button>
+              <button class="btn sm ghostbtn" id="resetScenario" title="Reset the board to the starting scenario">Reset</button>
+            </div>
             <div class="body log" id="log"></div>
           </div>
           <div class="card">
@@ -327,6 +343,7 @@ const SEED = {
   ],
   mapImage:null,     // dataURL of imported picture
   mapStrokes:[],     // [{col, pts:[{x,y}...]}] normalised 0..1
+  exercise:false,    // tabletop training-exercise mode
   events:[]
 };
 const PEOPLE=[{id:"cmd",name:"A. Reyes",role:"Incident Commander"}]
@@ -337,7 +354,7 @@ const KEY="opsdash.v4";
 const bc=("BroadcastChannel" in window)?new BroadcastChannel("opsdash"):null;
 function uid(){return Math.random().toString(36).slice(2,9)+performance.now().toString(36).replace('.','');}
 function load(){
-  try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.functions){s.mapStrokes=s.mapStrokes||[];if(!('mapImage'in s))s.mapImage=null;return s;}}catch(e){}
+  try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.functions){s.mapStrokes=s.mapStrokes||[];if(!('mapImage'in s))s.mapImage=null;s.exercise=!!s.exercise;return s;}}catch(e){}
   const st=structuredClone(SEED);
   st.functions.forEach(f=>f.checklist=f.checklist.map((t,i)=>({id:f.id+"-"+i,text:t[0],pri:t[1],done:false})));
   st.events=[{id:uid(),ts:Date.now()-1000*60*7,person:"A. Reyes",fn:"planning",fnName:"Command",text:"Incident declared — functions activated"}];
@@ -420,11 +437,11 @@ function renderLog(){
   document.getElementById('logCount').textContent=state.events.length;
   const el=document.getElementById('log');
   el.innerHTML=[...state.events].reverse().map(e=>{
-    const col=fcol(e.fn);
-    return `<div class="ev ${e.id===lastEventId?'new':''}" style="border-left-color:${col}">
+    const inj=e.kind==='inject';const col=inj?'#f59e0b':fcol(e.fn);
+    return `<div class="ev ${inj?'inject':''} ${e.id===lastEventId?'new':''}" style="border-left-color:${col}">
       <span class="t">${hhmm(e.ts)}</span>${avatar(e.person)}
       <span class="txt"><b>${e.person}</b> ${e.text}
-        <span class="tag" style="background:${col}22;color:${col}">${e.fnName}</span></span></div>`;
+        <span class="tag" style="background:${col}22;color:${col}">${inj?'INJECT':e.fnName}</span></span></div>`;
   }).join("");
 }
 function renderOutByFn(){
@@ -548,6 +565,44 @@ function initMapEditor(){
   drawEditor();
 }
 
+/* ---------- exercise / training mode ---------- */
+function renderExercise(){
+  const on=!!state.exercise;
+  document.getElementById('exBanner').style.display=on?'':'none';
+  document.getElementById('injectBar').style.display=on?'':'none';
+  const st=document.getElementById('statusTxt');
+  st.textContent=on?'● EXERCISE':'● ACTIVE';st.style.color=on?'#f5b942':'#ff9d6b';
+  const tog=document.getElementById('exToggle');
+  if(document.activeElement!==tog)tog.checked=on;
+}
+function injectEvent(){
+  const inp=document.getElementById('injectInput');const v=inp.value.trim();if(!v)return;
+  state.events.push({id:uid(),ts:Date.now(),person:'FACILITATOR',fn:'planning',fnName:'INJECT',kind:'inject',text:v});
+  lastEventId=state.events[state.events.length-1].id;inp.value='';broadcast();render();
+}
+function exportLog(){
+  const rows=[['Time','Date','Person','Function','Type','Entry']];
+  state.events.forEach(e=>{const d=new Date(e.ts);
+    rows.push([d.toLocaleTimeString(),d.toLocaleDateString(),e.person,e.fnName,e.kind==='inject'?'INJECT':'event',
+      '"'+String(e.text).replace(/"/g,'""')+'"']);});
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=(state.projectId||'incident')+'-activity-log.csv';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+function resetScenario(){
+  const ex=state.exercise;localStorage.removeItem(KEY);state=load();state.exercise=ex;
+  activeFunc=state.functions[0].id;mapImgCache={src:null,img:null};broadcast();render();
+}
+function initExercise(){
+  document.getElementById('exToggle').onchange=e=>{state.exercise=e.target.checked;
+    logEvent(e.target.checked?'🎓 EXERCISE MODE started — training tabletop':'✅ exercise mode ended','planning');};
+  document.getElementById('injectBtn').onclick=injectEvent;
+  document.getElementById('injectInput').addEventListener('keydown',e=>{if(e.key==='Enter')injectEvent();});
+  document.getElementById('exportLog').onclick=exportLog;
+  document.getElementById('resetScenario').onclick=()=>{if(confirm('Reset the board to the starting scenario? This clears current progress.'))resetScenario();};
+}
+
 function renderWho(){
   const sel=document.getElementById('mePick');
   sel.innerHTML=PEOPLE.map(p=>`<option value="${p.id}" ${p.id===me.id?'selected':''}>${p.name} — ${p.role}</option>`).join("");
@@ -559,7 +614,7 @@ function renderStrip(){
   inp.onchange=()=>{state.projectId=inp.value;broadcast();};
 }
 function render(){
-  renderStrip();renderOrg();renderObjectives();renderResources();renderLog();renderOutByFn();renderAssignments();renderMap();
+  renderStrip();renderExercise();renderOrg();renderObjectives();renderResources();renderLog();renderOutByFn();renderAssignments();renderMap();
   if(document.getElementById('tab-work').style.display!=='none')renderChecklist();
   if(document.getElementById('tab-map').style.display!=='none')drawEditor();
   lastEventId=null;
@@ -591,7 +646,7 @@ window.addEventListener('storage',e=>{if(e.key===KEY){state=load();render();}});
 setInterval(()=>{tick();if(document.getElementById('tab-dash').style.display!=='none'){renderLog();}},1000);
 
 /* ---------- boot ---------- */
-renderWho();tick();render();
+renderWho();initExercise();tick();render();
 </script>
 </body>
 </html>
