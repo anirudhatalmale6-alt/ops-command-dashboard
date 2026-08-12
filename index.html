@@ -150,6 +150,33 @@
   @media(max-width:820px){.grid2{grid-template-columns:1fr}}
   .footer{color:var(--dim);font-size:12px;text-align:center;padding:20px}
   .hint{color:var(--dim);font-size:12px;margin-top:10px}
+  /* priority messages */
+  .msgbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--line);background:#141a24}
+  .msgbar select{background:var(--chip);color:var(--ink);border:1px solid var(--line);padding:8px 10px;border-radius:8px;font-size:13px;cursor:pointer}
+  .msgbar input.msgText{flex:1;min-width:200px;background:var(--chip);border:1px solid var(--line);color:var(--ink);padding:8px 11px;border-radius:8px}
+  .fromchip{display:flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:4px 10px 4px 5px;font-size:12px;white-space:nowrap}
+  .fromchip .avatar{width:22px;height:22px;font-size:9px}
+  .fromchip small{color:var(--muted);display:block;font-size:10px;line-height:1.1}
+  .msglist{max-height:250px;overflow:auto}
+  .msg{display:flex;gap:10px;align-items:flex-start;padding:9px 4px 9px 10px;border-bottom:1px solid #1c2330;border-left:3px solid transparent}
+  .msg:last-child{border-bottom:0}
+  .msg .t{color:var(--dim);font-variant-numeric:tabular-nums;font-size:11px;white-space:nowrap;padding-top:2px}
+  .msg .mtxt{flex:1}
+  .msg .mtxt .hdr{font-size:11px;color:var(--muted)}
+  .msg .mtxt .hdr b{color:var(--ink);font-size:13px}
+  .msg .body2{margin-top:2px}
+  .msg.tome{background:#131c26}
+  .mpri{font-size:10px;font-weight:800;padding:1px 7px;border-radius:5px;letter-spacing:.4px;margin-left:6px}
+  .acks{font-size:11px;color:var(--ok);margin-top:3px}
+  .noack{font-size:11px;color:var(--warn);margin-top:3px}
+  .ackbtn{background:var(--chip);border:1px solid #3b5570;color:#bfe0ff;padding:5px 11px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+  .ackbtn:hover{background:#1d3050}
+  .alertstrip{display:flex;align-items:center;gap:12px;background:linear-gradient(90deg,#4a1414,#331010);border:1px solid #7a2a2a;
+    border-radius:var(--radius);padding:11px 14px;margin-bottom:14px;box-shadow:0 0 0 1px #ef444422,0 8px 24px rgba(0,0,0,.35);animation:pulsebg 2.4s infinite}
+  @keyframes pulsebg{0%,100%{box-shadow:0 0 0 1px #ef444422,0 8px 24px rgba(0,0,0,.35)}50%{box-shadow:0 0 0 3px #ef444433,0 8px 24px rgba(0,0,0,.35)}}
+  .alertstrip .ttl{font-weight:800;color:#ff8a8a;letter-spacing:.6px;font-size:12px}
+  .alertstrip .mtx{flex:1;color:#ffdede}
+  .unread{background:var(--bad)!important;color:#fff!important}
   .maptools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .btn.ghostbtn{background:var(--chip);color:var(--ink);border:1px solid var(--line)}
   .pen{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;box-shadow:inset 0 0 0 1px #0006}
@@ -186,6 +213,13 @@
   <main>
     <!-- DASHBOARD -->
     <section id="tab-dash">
+      <div id="msgAlert"></div>
+      <div class="card" style="margin-bottom:14px">
+        <h3>Priority Messages <span class="count" id="msgCount"></span>
+          <span style="margin-left:auto;color:var(--dim);font-size:11px;text-transform:none;letter-spacing:0">Incident Commander ↔ Functions</span></h3>
+        <div class="msgbar" data-msgbar></div>
+        <div class="body msglist" data-msglist></div>
+      </div>
       <div class="board">
         <!-- LEFT -->
         <div class="col">
@@ -288,9 +322,16 @@
           <h3 id="clTitle">Checklist</h3>
           <div class="body" id="checklist"></div>
         </div>
-        <div class="card">
-          <h3>This Function — Recent Activity</h3>
-          <div class="body log" id="funcLog"></div>
+        <div class="col" style="display:flex;flex-direction:column;gap:16px">
+          <div class="card">
+            <h3>Priority Messages <span class="count" id="msgCountW"></span></h3>
+            <div class="msgbar" data-msgbar></div>
+            <div class="body msglist" data-msglist></div>
+          </div>
+          <div class="card">
+            <h3>This Function — Recent Activity</h3>
+            <div class="body log" id="funcLog"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -305,6 +346,7 @@ const PRI={1:{label:"HIGH",cls:"p1"},2:{label:"MED",cls:"p2"},3:{label:"LOW",cls
 const STAT={"on-scene":{label:"On scene",cls:"s-on",c:"#22c55e"},"mobile":{label:"Mobile",cls:"s-mob",c:"#f59e0b"},
   "staging":{label:"At staging",cls:"s-stag",c:"#3b82f6"},"out":{label:"Out of service",cls:"s-out",c:"#8b98a9"}};
 const STAT_ORDER=["on-scene","mobile","staging","out"];
+const MPRI={urgent:{label:"URGENT",c:"#ef4444"},high:{label:"HIGH",c:"#f59e0b"},routine:{label:"ROUTINE",c:"#7fb0ea"}};
 
 /* ---------- seed ---------- */
 const SEED = {
@@ -344,20 +386,27 @@ const SEED = {
   mapImage:null,     // dataURL of imported picture
   mapStrokes:[],     // [{col, pts:[{x,y}...]}] normalised 0..1
   exercise:false,    // tabletop training-exercise mode
+  messages:[],       // priority messages: {id,ts,from,fromId,to,pri,text,acks:[]}
   events:[]
 };
 const PEOPLE=[{id:"cmd",name:"A. Reyes",role:"Incident Commander"}]
   .concat(SEED.functions.map(f=>({id:f.id,name:f.lead,role:f.name})));
 
 /* ---------- storage / realtime ---------- */
-const KEY="opsdash.v4";
+const KEY="opsdash.v5";
 const bc=("BroadcastChannel" in window)?new BroadcastChannel("opsdash"):null;
 function uid(){return Math.random().toString(36).slice(2,9)+performance.now().toString(36).replace('.','');}
 function load(){
-  try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.functions){s.mapStrokes=s.mapStrokes||[];if(!('mapImage'in s))s.mapImage=null;s.exercise=!!s.exercise;return s;}}catch(e){}
+  try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.functions){s.mapStrokes=s.mapStrokes||[];if(!('mapImage'in s))s.mapImage=null;s.exercise=!!s.exercise;s.messages=s.messages||[];return s;}}catch(e){}
   const st=structuredClone(SEED);
   st.functions.forEach(f=>f.checklist=f.checklist.map((t,i)=>({id:f.id+"-"+i,text:t[0],pri:t[1],done:false})));
   st.events=[{id:uid(),ts:Date.now()-1000*60*7,person:"A. Reyes",fn:"planning",fnName:"Command",text:"Incident declared — functions activated"}];
+  st.messages=[
+    {id:uid(),ts:Date.now()-1000*60*6,from:"A. Reyes",fromId:"cmd",to:"all",pri:"high",
+     text:"All functions — report resource status to Command within 10 minutes.",acks:["J. Patel","S. Larsen"]},
+    {id:uid(),ts:Date.now()-1000*60*3,from:"J. Patel",fromId:"fire",to:"cmd",pri:"urgent",
+     text:"Structural collapse risk in the north sector — recommend withdrawing crews to defensive positions.",acks:[]},
+  ];
   return st;
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
@@ -504,6 +553,76 @@ function renderChecklist(){
 }
 function postNote(){const inp=document.getElementById('noteInput');const v=inp.value.trim();if(!v)return;logEvent('📝 '+v,activeFunc);inp.value='';}
 
+/* ---------- priority messages ---------- */
+let barsBuiltFor=null;
+function toLabel(v){if(v==='all')return'All functions';if(v==='cmd')return'Incident Commander';const f=fnById(v);return f?f.name:v;}
+function toColor(v){if(v==='all')return'#8b98a9';if(v==='cmd')return'#60a5fa';return fcol(v);}
+function forMe(m){return m.to==='all'||m.to===me.id;}
+function needsAck(m){return forMe(m)&&m.fromId!==me.id&&!(m.acks||[]).includes(me.name);}
+function buildBars(){
+  const opts=[{v:'all',l:'All functions'},{v:'cmd',l:'Incident Commander'}]
+    .concat(state.functions.map(f=>({v:f.id,l:f.name})))
+    .filter(o=>o.v!==me.id);
+  const html=`
+    <span class="fromchip">${avatar(me.name)}<span>${me.name}<small>${me.role}</small></span></span>
+    <span style="color:var(--dim);font-size:12px">to</span>
+    <select class="msgTo">${opts.map(o=>`<option value="${o.v}">${o.l}</option>`).join("")}</select>
+    <select class="msgPri">${Object.keys(MPRI).map(k=>`<option value="${k}" ${k==='high'?'selected':''}>${MPRI[k].label}</option>`).join("")}</select>
+    <input class="msgText" placeholder="Type a priority message…">
+    <button class="btn msgSend">Send</button>`;
+  document.querySelectorAll('[data-msgbar]').forEach(bar=>{
+    bar.innerHTML=html;
+    const send=()=>sendMsg(bar);
+    bar.querySelector('.msgSend').onclick=send;
+    bar.querySelector('.msgText').addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+  });
+  barsBuiltFor=me.id;
+}
+function sendMsg(bar){
+  const inp=bar.querySelector('.msgText'),v=inp.value.trim();if(!v)return;
+  const to=bar.querySelector('.msgTo').value,pri=bar.querySelector('.msgPri').value;
+  state.messages.push({id:uid(),ts:Date.now(),from:me.name,fromId:me.id,to,pri,text:v,acks:[]});
+  inp.value='';
+  logEvent('📣 '+MPRI[pri].label+' message to '+toLabel(to)+': “'+v+'”',me.id==='cmd'?'planning':me.id);
+}
+function ackMsg(id){
+  const m=state.messages.find(x=>x.id===id);if(!m)return;
+  m.acks=m.acks||[];if(!m.acks.includes(me.name))m.acks.push(me.name);
+  if(m.pri==='urgent')logEvent('☑ acknowledged URGENT message from '+m.from,me.id==='cmd'?'planning':me.id);
+  else{broadcast();render();}
+}
+function renderMessages(){
+  if(barsBuiltFor!==me.id)buildBars();
+  const pend=state.messages.filter(needsAck).length;
+  ['msgCount','msgCountW'].forEach(id=>{const el=document.getElementById(id);if(!el)return;
+    el.textContent=pend?pend+' awaiting you':state.messages.length+' total';
+    el.classList.toggle('unread',!!pend);});
+  const html=[...state.messages].reverse().map(m=>{
+    const p=MPRI[m.pri]||MPRI.routine,mine=m.fromId===me.id,ack=needsAck(m);
+    return `<div class="msg ${forMe(m)&&!mine?'tome':''}" style="border-left-color:${p.c}">
+      <span class="t">${hhmm(m.ts)}</span>${avatar(m.from)}
+      <div class="mtxt">
+        <div class="hdr"><b>${m.from}</b> → <span style="color:${toColor(m.to)}">${toLabel(m.to)}</span>
+          <span class="mpri" style="background:${p.c}22;color:${p.c}">${p.label}</span></div>
+        <div class="body2">${m.text}</div>
+        ${(m.acks&&m.acks.length)?`<div class="acks">✓ acknowledged by ${m.acks.join(', ')}</div>`
+          :`<div class="noack">⏳ not yet acknowledged</div>`}
+      </div>
+      ${ack?`<button class="ackbtn" data-ack="${m.id}">Acknowledge</button>`:''}</div>`;
+  }).join("")||`<div class="empty">No priority messages yet.</div>`;
+  document.querySelectorAll('[data-msglist]').forEach(el=>{
+    el.innerHTML=html;
+    el.querySelectorAll('[data-ack]').forEach(b=>b.onclick=()=>ackMsg(b.dataset.ack));
+  });
+  // urgent alert strip
+  const al=document.getElementById('msgAlert');if(!al)return;
+  const urg=[...state.messages].reverse().find(m=>m.pri==='urgent'&&needsAck(m));
+  al.innerHTML=urg?`<div class="alertstrip"><span class="ttl">⚠ URGENT</span>
+    <span class="mtx"><b>${urg.from}</b> — ${urg.text}</span>
+    <button class="ackbtn" data-ack2="${urg.id}">Acknowledge</button></div>`:'';
+  if(urg)al.querySelector('[data-ack2]').onclick=()=>ackMsg(urg.id);
+}
+
 /* ---------- map / sketch ---------- */
 const MW=900,MH=506;
 let mapImgCache={src:null,img:null};
@@ -614,7 +733,7 @@ function renderStrip(){
   inp.onchange=()=>{state.projectId=inp.value;broadcast();};
 }
 function render(){
-  renderStrip();renderExercise();renderOrg();renderObjectives();renderResources();renderLog();renderOutByFn();renderAssignments();renderMap();
+  renderStrip();renderExercise();renderOrg();renderObjectives();renderResources();renderLog();renderOutByFn();renderAssignments();renderMap();renderMessages();
   if(document.getElementById('tab-work').style.display!=='none')renderChecklist();
   if(document.getElementById('tab-map').style.display!=='none')drawEditor();
   lastEventId=null;
