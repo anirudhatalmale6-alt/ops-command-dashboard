@@ -133,6 +133,13 @@
   .pri.p1{background:#3a1414;color:#ff6b6b;box-shadow:inset 0 0 0 1px #7a2a2a}
   .pri.p2{background:#3a2a12;color:#f5b942;box-shadow:inset 0 0 0 1px #6b4e1a}
   .pri.p3{background:#1c2735;color:#8fb3e0;box-shadow:inset 0 0 0 1px #2f4763}
+  .st3{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;cursor:pointer;user-select:none;white-space:nowrap}
+  .a-open{background:#2a2f38;color:#9aa6b5;box-shadow:inset 0 0 0 1px #3a424e}
+  .a-wip{background:#3a2a12;color:#f5b942;box-shadow:inset 0 0 0 1px #6b4e1a}
+  .a-done{background:#0f2c1c;color:#4ade80;box-shadow:inset 0 0 0 1px #1f5738}
+  .linkbtn{background:none;border:0;color:var(--dim);font-size:11px;cursor:pointer;padding:2px 4px;text-decoration:underline}
+  .linkbtn:hover{color:var(--accent2)}
+  .minisel{background:var(--chip);color:var(--ink);border:1px solid var(--line);padding:8px 8px;border-radius:8px;font-size:12px;cursor:pointer}
   .grouphdr{font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--dim);margin:10px 0 3px;padding-left:2px}
   .grouphdr:first-child{margin-top:0}
 
@@ -177,6 +184,33 @@
   .alertstrip .ttl{font-weight:800;color:#ff8a8a;letter-spacing:.6px;font-size:12px}
   .alertstrip .mtx{flex:1;color:#ffdede}
   .unread{background:var(--bad)!important;color:#fff!important}
+  /* ICS forms */
+  .formtop{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .sheet{background:#fff;color:#111;border-radius:8px;padding:22px 24px;max-width:1000px;box-shadow:var(--shadow);font-size:13px;line-height:1.45}
+  .sheet h2{margin:0 0 12px;text-align:center;font-size:15px;letter-spacing:.4px;text-transform:uppercase}
+  .sheet table{width:100%;border-collapse:collapse;margin-bottom:10px}
+  .sheet td,.sheet th{border:1px solid #333;padding:5px 7px;vertical-align:top;text-align:left}
+  .sheet th{background:#eceff3;font-size:11px;font-weight:700}
+  .sheet .fno{font-weight:700;font-size:11px;display:block;color:#333}
+  .sheet .val{font-size:13px}
+  .sheet .blk{border:1px solid #333;padding:7px 9px;margin-bottom:10px;min-height:44px}
+  .sheet .foot{display:flex;justify-content:space-between;font-size:11px;color:#333;border-top:1px solid #333;padding-top:6px;margin-top:6px}
+  .sheet ol{margin:4px 0 0 18px;padding:0}
+  .sheet ol li{margin-bottom:3px}
+  .sheet .orgbox{border:1px solid #333;padding:5px 8px;text-align:center;border-radius:3px;background:#f6f8fa;min-width:120px}
+  .sheet .orgbox .p{font-size:10px;text-transform:uppercase;color:#444}
+  .sheet .orgbox .nm{font-weight:700}
+  .sheet .orgrow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+  .sheet .conn{width:2px;height:12px;background:#333;margin:0 auto}
+  .sheet .mapimg{width:100%;border:1px solid #333;display:block}
+  .sheet .live{background:#fff8d6;border:1px solid #d9c98a;border-radius:3px;padding:0 5px;font-size:11px;display:inline-block}
+  @media print{
+    body{background:#fff}
+    .app > header, .strip, .exbanner, nav.tabs, .formtop, .hint, .footer{display:none!important}
+    main{padding:0;max-width:none}
+    .sheet{box-shadow:none;border-radius:0;max-width:none;padding:0}
+    .sheet + .sheet{page-break-before:always}
+  }
   .maptools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .btn.ghostbtn{background:var(--chip);color:var(--ink);border:1px solid var(--line)}
   .pen{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;box-shadow:inset 0 0 0 1px #0006}
@@ -199,6 +233,8 @@
     <input id="projId" value="INC-2026-0814" />
     <span class="lbl" style="margin-left:6px">Status</span>
     <span style="font-weight:700;color:#ff9d6b" id="statusTxt">● ACTIVE</span>
+    <span class="lbl" style="margin-left:6px">Structure</span>
+    <select id="tplPick" style="background:#0e2438;border:1px solid #2b4d6b;color:#eaf3fb;padding:5px 8px;border-radius:7px;font-size:12px;cursor:pointer"></select>
     <label class="extog" title="Run this as a training tabletop exercise"><input type="checkbox" id="exToggle"> 🎓 Exercise mode</label>
     <div class="clock" id="clock">--:--:--<small id="cdate"></small></div>
   </div>
@@ -208,6 +244,7 @@
     <button data-tab="dash" class="active">Central Dashboard</button>
     <button data-tab="work">My Function Checklist</button>
     <button data-tab="map">Map / Sketch</button>
+    <button data-tab="forms">ICS Forms 201 · 202 · 204 · 207</button>
   </nav>
 
   <main>
@@ -228,8 +265,14 @@
             <div class="body"><div class="org" id="org"></div></div>
           </div>
           <div class="card">
-            <h3>Objectives <span class="count" id="objCount"></span></h3>
+            <h3>Objectives <span class="count" id="objCount"></span>
+              <span style="margin-left:auto;color:var(--dim);font-size:10px">ICS 202 §3</span></h3>
             <div class="body" id="objectives"></div>
+          </div>
+          <div class="card">
+            <h3>Situation Summary &amp; Safety Briefing
+              <span style="margin-left:auto;color:var(--dim);font-size:10px">ICS 201 §5</span></h3>
+            <div class="body" id="situation"></div>
           </div>
           <div class="card">
             <h3>Resource Summary <span class="count" id="resCount"></span></h3>
@@ -314,6 +357,22 @@
       </div>
     </section>
 
+    <!-- ICS FORMS -->
+    <section id="tab-forms" style="display:none">
+      <div class="formtop">
+        <div class="funcpick" id="formpick" style="margin:0"></div>
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span style="color:var(--muted);font-size:12px">Operational period</span>
+          <input type="datetime-local" id="opFrom" class="minisel">
+          <span style="color:var(--dim)">→</span>
+          <input type="datetime-local" id="opTo" class="minisel">
+          <button class="btn sm" id="printForm">Print / PDF ⎙</button>
+        </div>
+      </div>
+      <div id="formHost"></div>
+      <div class="hint" style="max-width:1000px">These are not separate documents — every field is drawn live from the same incident data you and the functions are working in. Tick an item on a function checklist, change a resource status or agree a new assignment, and the forms update themselves. Print or save to PDF at any point for the IAP or the post-incident record.</div>
+    </section>
+
     <!-- WORK -->
     <section id="tab-work" style="display:none">
       <div class="funcpick" id="funcpick"></div>
@@ -341,70 +400,134 @@
 
 <script>
 /* ---------- function colours ---------- */
-const FCOL={fire:"#ef4444",medical:"#22c55e",security:"#3b82f6",logistics:"#f59e0b",planning:"#a78bfa"};
+const FCOL={fire:"#ef4444",medical:"#22c55e",security:"#3b82f6",logistics:"#f59e0b",planning:"#a78bfa",
+  operations:"#ef4444",finance:"#22c55e",safety:"#f97316",pio:"#38bdf8",liaison:"#c084fc"};
 const PRI={1:{label:"HIGH",cls:"p1"},2:{label:"MED",cls:"p2"},3:{label:"LOW",cls:"p3"}};
 const STAT={"on-scene":{label:"On scene",cls:"s-on",c:"#22c55e"},"mobile":{label:"Mobile",cls:"s-mob",c:"#f59e0b"},
   "staging":{label:"At staging",cls:"s-stag",c:"#3b82f6"},"out":{label:"Out of service",cls:"s-out",c:"#8b98a9"}};
 const STAT_ORDER=["on-scene","mobile","staging","out"];
 const MPRI={urgent:{label:"URGENT",c:"#ef4444"},high:{label:"HIGH",c:"#f59e0b"},routine:{label:"ROUTINE",c:"#7fb0ea"}};
 
-/* ---------- seed ---------- */
-const SEED = {
-  projectId:"INC-2026-0814",
-  command:{name:"Incident Commander", lead:"A. Reyes"},
-  functions:[
-    {id:"fire", name:"Fire", lead:"J. Patel",
-      checklist:[["Confirm fire ground perimeter",1],["Deploy suppression crews",1],["Establish water supply",2],["Check structural collapse risk",1],["Log resource requests",3]]},
-    {id:"medical", name:"Medical", lead:"S. Larsen",
-      checklist:[["Set up triage point",1],["Confirm ambulance staging",1],["Report casualty count",1],["Request additional medics",2],["Update hospital liaison",2]]},
-    {id:"security", name:"Security", lead:"M. Okoro",
-      checklist:[["Establish exclusion zone",1],["Control site access points",2],["Brief team on hazards",2],["Coordinate crowd management",2],["Record security incidents",3]]},
-    {id:"logistics", name:"Logistics", lead:"D. Nguyen",
-      checklist:[["Confirm equipment inventory",2],["Arrange transport",2],["Secure staging area",1],["Allocate resources",2],["Track supply requests",3]]},
-    {id:"planning", name:"Planning", lead:"K. Adeyemi",
-      checklist:[["Compile situation report",1],["Set operational objectives",2],["Forecast resource needs",2],["Track task progress",2],["Prepare next-shift briefing",3]]},
-  ],
-  objectives:[
-    {id:"o1",text:"Preserve life and ensure casualty care",by:"A. Reyes"},
-    {id:"o2",text:"Prevent escalation of the incident",by:"A. Reyes"},
-    {id:"o3",text:"Protect property and the environment",by:"A. Reyes"},
-  ],
-  resources:[
-    {id:"r1",name:"Engine 1",fn:"fire",status:"on-scene"},
-    {id:"r2",name:"Rescue Unit 2",fn:"fire",status:"staging"},
-    {id:"r3",name:"Ambulance 7",fn:"medical",status:"mobile"},
-    {id:"r4",name:"Patrol A",fn:"security",status:"on-scene"},
-    {id:"r5",name:"Supply Truck",fn:"logistics",status:"staging"},
-  ],
-  assignments:[
-    {id:"a1",text:"Recon north sector for trapped persons",to:"Rescue Unit 2",fn:"fire",pri:1,done:false},
-    {id:"a2",text:"Establish casualty clearing station",to:"Ambulance 7",fn:"medical",pri:1,done:false},
-    {id:"a3",text:"Cordon east access road",to:"Patrol A",fn:"security",pri:2,done:false},
-    {id:"a4",text:"Deliver additional BA sets to fire ground",to:"Supply Truck",fn:"logistics",pri:2,done:false},
-    {id:"a5",text:"Draft situation report for next shift",to:"K. Adeyemi",fn:"planning",pri:3,done:false},
-  ],
-  mapImage:null,     // dataURL of imported picture
-  mapStrokes:[],     // [{col, pts:[{x,y}...]}] normalised 0..1
-  exercise:false,    // tabletop training-exercise mode
-  messages:[],       // priority messages: {id,ts,from,fromId,to,pri,text,acks:[]}
-  events:[]
+/* ---------- templates (the framework is data, not code — swap or edit any of this) ---------- */
+const TEMPLATES={
+  emergency:{
+    label:"Emergency Services — Fire / Medical / Security / Logistics / Planning",
+    commandStaff:[],
+    functions:[
+      {id:"fire", name:"Fire", lead:"J. Patel",
+        checklist:[["Confirm fire ground perimeter",1],["Deploy suppression crews",1],["Establish water supply",2],["Check structural collapse risk",1],["Log resource requests",3]]},
+      {id:"medical", name:"Medical", lead:"S. Larsen",
+        checklist:[["Set up triage point",1],["Confirm ambulance staging",1],["Report casualty count",1],["Request additional medics",2],["Update hospital liaison",2]]},
+      {id:"security", name:"Security", lead:"M. Okoro",
+        checklist:[["Establish exclusion zone",1],["Control site access points",2],["Brief team on hazards",2],["Coordinate crowd management",2],["Record security incidents",3]]},
+      {id:"logistics", name:"Logistics", lead:"D. Nguyen",
+        checklist:[["Confirm equipment inventory",2],["Arrange transport",2],["Secure staging area",1],["Allocate resources",2],["Track supply requests",3]]},
+      {id:"planning", name:"Planning", lead:"K. Adeyemi",
+        checklist:[["Compile situation report",1],["Set operational objectives",2],["Forecast resource needs",2],["Track task progress",2],["Prepare next-shift briefing",3]]},
+    ],
+    resources:[
+      {id:"r1",name:"Engine 1",ident:"E-1",fn:"fire",status:"on-scene"},
+      {id:"r2",name:"Rescue Unit 2",ident:"R-2",fn:"fire",status:"staging"},
+      {id:"r3",name:"Ambulance 7",ident:"A-7",fn:"medical",status:"mobile"},
+      {id:"r4",name:"Patrol A",ident:"P-A",fn:"security",status:"on-scene"},
+      {id:"r5",name:"Supply Truck",ident:"L-1",fn:"logistics",status:"staging"},
+    ],
+    assignments:[
+      {text:"Recon north sector for trapped persons",to:"Rescue Unit 2",fn:"fire",pri:1},
+      {text:"Establish casualty clearing station",to:"Ambulance 7",fn:"medical",pri:1},
+      {text:"Cordon east access road",to:"Patrol A",fn:"security",pri:2},
+      {text:"Deliver additional BA sets to fire ground",to:"Supply Truck",fn:"logistics",pri:2},
+      {text:"Draft situation report for next shift",to:"K. Adeyemi",fn:"planning",pri:3},
+    ],
+  },
+  ics:{
+    label:"ICS / NIMS — Operations / Planning / Logistics / Finance-Admin (+ Command Staff)",
+    commandStaff:[
+      {id:"safety",name:"Safety Officer",lead:"R. Hume"},
+      {id:"pio",name:"Public Information Officer",lead:"T. Whelan"},
+      {id:"liaison",name:"Liaison Officer",lead:"P. Ngata"},
+    ],
+    functions:[
+      {id:"operations", name:"Operations", lead:"J. Patel",
+        checklist:[["Brief Division / Group Supervisors on assignments",1],["Confirm tactics for this operational period",1],["Establish staging area and check-in",1],["Report resource status to Planning",2],["Identify unmet tactical resource needs",2]]},
+      {id:"planning", name:"Planning", lead:"K. Adeyemi",
+        checklist:[["Complete Incident Briefing (ICS 201)",1],["Draft Incident Objectives (ICS 202) for IC approval",1],["Build Assignment Lists (ICS 204) for next period",1],["Maintain resource status — Resources Unit",2],["Maintain situation display and SitRep — Situation Unit",2]]},
+      {id:"logistics", name:"Logistics", lead:"D. Nguyen",
+        checklist:[["Establish incident base and staging area",1],["Issue communications plan (ICS 205)",1],["Arrange feeding and responder welfare",2],["Source, track and issue supplies",2],["Arrange ground transport and fuel",3]]},
+      {id:"finance", name:"Finance/Admin", lead:"M. Okoro",
+        checklist:[["Open incident cost code",1],["Record personnel and equipment time",2],["Process procurement requests",2],["Log compensation and claims",2],["Prepare running cost estimate for IC",3]]},
+    ],
+    resources:[
+      {id:"r1",name:"Task Force Alpha",ident:"TF-A",fn:"operations",status:"on-scene"},
+      {id:"r2",name:"Strike Team Bravo",ident:"ST-B",fn:"operations",status:"staging"},
+      {id:"r3",name:"Situation Unit",ident:"SIT-1",fn:"planning",status:"on-scene"},
+      {id:"r4",name:"Supply Unit",ident:"SUP-1",fn:"logistics",status:"staging"},
+      {id:"r5",name:"Comms Unit",ident:"COM-1",fn:"logistics",status:"on-scene"},
+      {id:"r6",name:"Cost Unit",ident:"FIN-1",fn:"finance",status:"mobile"},
+    ],
+    assignments:[
+      {text:"Conduct primary search of north sector, report findings to Ops",to:"Task Force Alpha",fn:"operations",pri:1},
+      {text:"Hold at staging, prepare for relief of Task Force Alpha",to:"Strike Team Bravo",fn:"operations",pri:2},
+      {text:"Produce situation display and 2-hourly SitRep",to:"Situation Unit",fn:"planning",pri:1},
+      {text:"Establish staging area comms and issue radios",to:"Comms Unit",fn:"logistics",pri:1},
+      {text:"Open incident cost code and begin time recording",to:"Cost Unit",fn:"finance",pri:3},
+    ],
+  },
 };
-const PEOPLE=[{id:"cmd",name:"A. Reyes",role:"Incident Commander"}]
-  .concat(SEED.functions.map(f=>({id:f.id,name:f.lead,role:f.name})));
+const STATUS3={open:{label:"Not started",cls:"a-open",c:"#8b98a9"},wip:{label:"In progress",cls:"a-wip",c:"#f59e0b"},done:{label:"Complete",cls:"a-done",c:"#22c55e"}};
+const S3_ORDER=["open","wip","done"];
+
+/* ---------- seed ---------- */
+function buildSeed(tpl){
+  const t=TEMPLATES[tpl];
+  return {
+    template:tpl,
+    projectId:"INC-2026-0814",
+    incidentNo:"2026-0814",
+    startedTs:Date.now()-1000*60*35,
+    opFrom:Date.now()-1000*60*30, opTo:Date.now()+1000*60*60*11.5,
+    situation:"Fire in a two-storey commercial unit with possible persons reported. Adjoining units evacuated. Hazards: structural collapse risk to the north elevation, LPG cylinders stored to the rear, overhead power lines on the east access. All responders to wear full PPE; no entry to the north elevation without Safety Officer approval.",
+    command:{name:"Incident Commander", lead:"A. Reyes"},
+    commandStaff:structuredClone(t.commandStaff),
+    functions:structuredClone(t.functions),
+    objectives:[
+      {id:"o1",text:"Preserve life and ensure casualty care",by:"A. Reyes"},
+      {id:"o2",text:"Prevent escalation of the incident",by:"A. Reyes"},
+      {id:"o3",text:"Protect property and the environment",by:"A. Reyes"},
+    ],
+    resources:structuredClone(t.resources),
+    assignments:t.assignments.map((a,i)=>Object.assign({id:"a"+(i+1),status:"open",note:""},a)),
+    mapImage:null,     // dataURL of imported picture
+    mapStrokes:[],     // [{col, pts:[{x,y}...]}] normalised 0..1
+    exercise:false,    // tabletop training-exercise mode
+    messages:[],       // priority messages: {id,ts,from,fromId,to,pri,text,acks:[]}
+    events:[]
+  };
+}
+function people(){
+  return [{id:"cmd",name:state.command.lead,role:state.command.name}]
+    .concat((state.commandStaff||[]).map(c=>({id:c.id,name:c.lead,role:c.name})))
+    .concat(state.functions.map(f=>({id:f.id,name:f.lead,role:f.name})));
+}
 
 /* ---------- storage / realtime ---------- */
-const KEY="opsdash.v5";
+const KEY="opsdash.v6";
 const bc=("BroadcastChannel" in window)?new BroadcastChannel("opsdash"):null;
 function uid(){return Math.random().toString(36).slice(2,9)+performance.now().toString(36).replace('.','');}
-function load(){
-  try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.functions){s.mapStrokes=s.mapStrokes||[];if(!('mapImage'in s))s.mapImage=null;s.exercise=!!s.exercise;s.messages=s.messages||[];return s;}}catch(e){}
-  const st=structuredClone(SEED);
+function load(tpl){
+  if(!tpl){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.functions){
+    s.mapStrokes=s.mapStrokes||[];if(!('mapImage'in s))s.mapImage=null;s.exercise=!!s.exercise;
+    s.messages=s.messages||[];s.commandStaff=s.commandStaff||[];s.template=s.template||'emergency';
+    s.assignments.forEach(a=>{if(!a.status)a.status=a.done?'done':'open';});
+    return s;}}catch(e){}}
+  const st=buildSeed(tpl||'emergency');
   st.functions.forEach(f=>f.checklist=f.checklist.map((t,i)=>({id:f.id+"-"+i,text:t[0],pri:t[1],done:false})));
-  st.events=[{id:uid(),ts:Date.now()-1000*60*7,person:"A. Reyes",fn:"planning",fnName:"Command",text:"Incident declared — functions activated"}];
+  const f0=st.functions[0],f1=st.functions[1];
+  st.events=[{id:uid(),ts:Date.now()-1000*60*7,person:st.command.lead,fn:st.functions.find(f=>f.id==='planning')?'planning':f0.id,fnName:"Command",text:"Incident declared — functions activated"}];
   st.messages=[
-    {id:uid(),ts:Date.now()-1000*60*6,from:"A. Reyes",fromId:"cmd",to:"all",pri:"high",
-     text:"All functions — report resource status to Command within 10 minutes.",acks:["J. Patel","S. Larsen"]},
-    {id:uid(),ts:Date.now()-1000*60*3,from:"J. Patel",fromId:"fire",to:"cmd",pri:"urgent",
+    {id:uid(),ts:Date.now()-1000*60*6,from:st.command.lead,fromId:"cmd",to:"all",pri:"high",
+     text:"All functions — report resource status to Command within 10 minutes.",acks:[f0.lead,f1.lead]},
+    {id:uid(),ts:Date.now()-1000*60*3,from:f0.lead,fromId:f0.id,to:"cmd",pri:"urgent",
      text:"Structural collapse risk in the north sector — recommend withdrawing crews to defensive positions.",acks:[]},
   ];
   return st;
@@ -412,7 +535,7 @@ function load(){
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 function broadcast(){save();if(bc)bc.postMessage({t:1});}
 let state=load();
-let me=PEOPLE[1];
+let me=people().find(p=>p.id===state.functions[0].id)||people()[0];
 let activeFunc=state.functions[0].id;
 let lastEventId=null;
 
@@ -436,9 +559,13 @@ function logEvent(text,fnId){
 
 /* ---------- renders ---------- */
 function renderOrg(){
-  const c=state.command;const fns=state.functions;
+  const c=state.command;const fns=state.functions;const cs=state.commandStaff||[];
   document.getElementById('org').innerHTML=`
-    <div class="node command"><div class="r">Incident Commander</div><div class="n">${c.lead}</div></div>
+    <div class="node command"><div class="r">${c.name}</div><div class="n">${c.lead}</div></div>
+    ${cs.length?`<div class="connector"></div>
+      <div class="row2" style="margin-bottom:2px">${cs.map(s=>`
+        <div class="node" style="border-top:3px solid ${fcol(s.id)};min-width:auto;padding:5px 9px">
+          <div class="r" style="color:${fcol(s.id)};font-size:9px">${s.name}</div><div class="n" style="font-size:12px">${s.lead}</div></div>`).join("")}</div>`:''}
     <div class="connector"></div>
     <div class="row2">${fns.map(f=>`
       <div class="branch"><div class="node" style="border-top:3px solid ${fcol(f.id)}">
@@ -466,6 +593,16 @@ function addObj(){
   const inp=document.getElementById('objInput');const v=inp.value.trim();if(!v)return;
   state.objectives.push({id:uid(),text:v,by:me.name});
   logEvent('🎯 set objective: “'+v+'”','planning');inp.value='';
+}
+function renderSituation(){
+  const el=document.getElementById('situation');
+  if(el.querySelector('textarea')&&document.activeElement===el.querySelector('textarea'))return;
+  el.innerHTML=`<textarea id="sitTxt" rows="5" style="width:100%;background:var(--chip);border:1px solid var(--line);color:var(--ink);
+    border-radius:8px;padding:9px 10px;font:inherit;resize:vertical">${esc(state.situation||'')}</textarea>
+    <div class="hint">Feeds ICS 201 §5 and the General Situational Awareness box on ICS 202. Click out to save.</div>`;
+  const ta=document.getElementById('sitTxt');
+  ta.onchange=()=>{const v=ta.value.trim();if(v===state.situation)return;state.situation=v;
+    logEvent('📄 situation summary / safety briefing updated',fnById(me.id)?me.id:'planning');};
 }
 function renderResources(){
   document.getElementById('resCount').textContent=state.resources.length;
@@ -504,28 +641,74 @@ function renderOutByFn(){
   }).join("");
 }
 function renderAssignments(){
-  const open=state.assignments.filter(a=>!a.done);
+  const open=state.assignments.filter(a=>a.status!=='done');
   document.getElementById('asgCount').textContent=open.length+" open";
   const el=document.getElementById('assignments');
-  const sorted=[...state.assignments].sort((a,b)=>(a.done-b.done)||(a.pri-b.pri));
+  const rank=a=>(a.status==='done'?1:0);
+  const sorted=[...state.assignments].sort((a,b)=>(rank(a)-rank(b))||(a.pri-b.pri));
   let html="",cur=null;
-  sorted.filter(a=>!a.done).forEach(a=>{
+  sorted.filter(a=>a.status!=='done').forEach(a=>{
     if(a.pri!==cur){cur=a.pri;html+=`<div class="grouphdr">${PRI[a.pri].label} priority</div>`;}
-    const f=fnById(a.fn);
-    html+=`<div class="asg"><input type="checkbox" data-asg="${a.id}">
-      <div style="flex:1"><label>${a.text}</label>
-        <div class="meta">→ ${a.to} <span class="tag" style="background:${fcol(a.fn)}22;color:${fcol(a.fn)};padding:1px 6px;border-radius:5px">${f?f.name:''}</span></div></div>
-      <span class="pri ${PRI[a.pri].cls}">${PRI[a.pri].label}</span></div>`;
+    html+=asgRow(a);
   });
-  const done=sorted.filter(a=>a.done);
-  if(done.length){html+=`<div class="grouphdr">Completed</div>`;
-    done.forEach(a=>{html+=`<div class="asg done"><input type="checkbox" checked data-asg="${a.id}">
-      <div style="flex:1"><label>${a.text}</label><div class="meta">→ ${a.to}</div></div></div>`;});}
-  el.innerHTML=html||`<div class="empty">No assignments.</div>`;
-  el.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{
-    const a=state.assignments.find(x=>x.id===cb.dataset.asg);a.done=cb.checked;
-    logEvent((cb.checked?'✅ completed assignment':'↩ re-opened assignment')+': “'+a.text+'”',a.fn);
-  });
+  const done=sorted.filter(a=>a.status==='done');
+  if(done.length){html+=`<div class="grouphdr">Completed</div>`;done.forEach(a=>{html+=asgRow(a);});}
+  html=(html||`<div class="empty">No assignments yet.</div>`)+`
+    <div class="addrow" style="flex-wrap:wrap">
+      <input id="asgText" placeholder="New assignment — agreed at the tasking meeting…" style="min-width:180px">
+      <select id="asgFn" class="minisel">${state.functions.map(f=>`<option value="${f.id}">${f.name}</option>`).join("")}</select>
+      <select id="asgPri" class="minisel">${[1,2,3].map(p=>`<option value="${p}" ${p===2?'selected':''}>${PRI[p].label}</option>`).join("")}</select>
+      <input id="asgTo" placeholder="Assigned to (resource / person)" style="min-width:150px">
+      <button class="btn" id="asgAdd">Add</button>
+    </div>
+    <div class="hint">Assignments are editable — agreed at the tasking meeting or pulled from a generic pre-existing list. Each one is given to a function; that section lead coordinates it and updates progress.</div>`;
+  el.innerHTML=html;
+  el.querySelectorAll('[data-cyc]').forEach(b=>b.onclick=()=>cycleAsg(b.dataset.cyc));
+  el.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>delAsg(b.dataset.del));
+  el.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>editAsg(b.dataset.edit));
+  document.getElementById('asgAdd').onclick=addAsg;
+  document.getElementById('asgText').addEventListener('keydown',e=>{if(e.key==='Enter')addAsg();});
+}
+function asgRow(a){
+  const f=fnById(a.fn),s=STATUS3[a.status]||STATUS3.open;
+  return `<div class="asg ${a.status==='done'?'done':''}">
+    <div style="flex:1">
+      <label>${a.text}</label>
+      <div class="meta">→ ${a.to||'unassigned'}
+        <span class="tag" style="background:${fcol(a.fn)}22;color:${fcol(a.fn)};padding:1px 6px;border-radius:5px">${f?f.name:''}</span>
+        · lead: ${f?f.lead:'—'}</div>
+      <div style="margin-top:5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <span class="st3 ${s.cls}" data-cyc="${a.id}" title="Click to update progress">● ${s.label}</span>
+        <span class="pri ${PRI[a.pri].cls}">${PRI[a.pri].label}</span>
+        <button class="linkbtn" data-edit="${a.id}">edit</button>
+        <button class="linkbtn" data-del="${a.id}">remove</button>
+      </div>
+    </div></div>`;
+}
+function cycleAsg(id){
+  const a=state.assignments.find(x=>x.id===id);if(!a)return;
+  a.status=S3_ORDER[(S3_ORDER.indexOf(a.status)+1)%S3_ORDER.length];a.done=(a.status==='done');
+  logEvent('📌 assignment “'+a.text+'” → '+STATUS3[a.status].label,a.fn);
+}
+function addAsg(){
+  const t=document.getElementById('asgText'),v=t.value.trim();if(!v)return;
+  const fn=document.getElementById('asgFn').value,pri=+document.getElementById('asgPri').value;
+  const to=document.getElementById('asgTo').value.trim();
+  state.assignments.push({id:uid(),text:v,to:to||(fnById(fn)?fnById(fn).lead:''),fn,pri,status:'open',done:false});
+  t.value='';document.getElementById('asgTo').value='';
+  logEvent('➕ new assignment “'+v+'” to '+(fnById(fn)?fnById(fn).name:fn)+' ('+PRI[pri].label+')',fn);
+}
+function editAsg(id){
+  const a=state.assignments.find(x=>x.id===id);if(!a)return;
+  const v=prompt('Edit assignment:',a.text);if(v===null)return;
+  const w=v.trim();if(!w||w===a.text)return;
+  const old=a.text;a.text=w;logEvent('✏ assignment amended: “'+old+'” → “'+w+'”',a.fn);
+}
+function delAsg(id){
+  const a=state.assignments.find(x=>x.id===id);if(!a)return;
+  if(!confirm('Remove this assignment?\n\n'+a.text))return;
+  state.assignments=state.assignments.filter(x=>x.id!==id);
+  logEvent('🗑 assignment removed: “'+a.text+'”',a.fn);
 }
 function renderChecklist(){
   const f=fnById(activeFunc);
@@ -632,7 +815,7 @@ function getMapImg(cb){
   if(mapImgCache.src===state.mapImage&&mapImgCache.img){cb(mapImgCache.img);return;}
   const img=new Image();img.onload=()=>{mapImgCache={src:state.mapImage,img};cb(img);};img.src=state.mapImage;
 }
-function drawMapTo(canvas){
+function drawMapTo(canvas,done){
   canvas.width=MW;canvas.height=MH;const ctx=canvas.getContext('2d');
   ctx.fillStyle='#0c1720';ctx.fillRect(0,0,MW,MH);
   getMapImg(img=>{
@@ -642,6 +825,7 @@ function drawMapTo(canvas){
       if(!st.pts.length)return;ctx.strokeStyle=st.col;ctx.lineWidth=3.4;ctx.lineJoin='round';ctx.lineCap='round';
       ctx.beginPath();ctx.moveTo(st.pts[0].x*MW,st.pts[0].y*MH);st.pts.forEach(p=>ctx.lineTo(p.x*MW,p.y*MH));ctx.stroke();
     });
+    if(done)done();
   });
 }
 function importMapFile(file){
@@ -684,6 +868,189 @@ function initMapEditor(){
   drawEditor();
 }
 
+/* ---------- ICS forms (201 / 202 / 204 / 207) ---------- */
+let activeForm='201', form204Fn='__all';
+const esc=s=>String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function dPart(ts){return new Date(ts).toLocaleDateString('en-GB');}
+function tPart(ts){const d=new Date(ts);return String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0');}
+function dtLocal(ts){const d=new Date(ts);const p=n=>String(n).padStart(2,'0');
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes());}
+function planLead(){const p=fnById('planning');return p?p.lead:state.command.lead;}
+function preparedBy(name,title){return `<div class="foot"><div><b>Prepared by:</b> ${esc(name)} &nbsp;·&nbsp; <b>Position/Title:</b> ${esc(title)}</div>
+  <div><b>Date/Time:</b> ${dPart(Date.now())} ${tPart(Date.now())}</div></div>`;}
+function opHdr(){return `<td><span class="fno">2. Operational Period:</span>
+  <span class="val">From ${dPart(state.opFrom)} ${tPart(state.opFrom)} &nbsp; To ${dPart(state.opTo)} ${tPart(state.opTo)}</span></td>`;}
+
+function form201(){
+  const res=state.resources,ev=[...state.events];
+  return `<div class="sheet">
+    <h2>Incident Briefing (ICS 201)</h2>
+    <table><tr>
+      <td style="width:40%"><span class="fno">1. Incident Name:</span><span class="val">${esc(state.projectId)}</span></td>
+      <td><span class="fno">2. Incident Number:</span><span class="val">${esc(state.incidentNo||'—')}</span></td>
+      <td><span class="fno">3. Date/Time Initiated:</span><span class="val">${dPart(state.startedTs)} &nbsp; ${tPart(state.startedTs)}</span></td>
+    </tr></table>
+
+    <span class="fno">4. Map/Sketch (total area of operations, incident site, impacted and threatened areas):</span>
+    <div class="blk" id="f201map" style="padding:0;min-height:120px"></div>
+
+    <span class="fno">5. Situation Summary and Health and Safety Briefing:</span>
+    <div class="blk">${esc(state.situation)||'<i>Not yet recorded.</i>'}</div>
+
+    <span class="fno">7. Current and Planned Objectives:</span>
+    <div class="blk"><ol>${state.objectives.map(o=>`<li>${esc(o.text)}</li>`).join('')||'<i>None set.</i>'}</ol></div>
+
+    <span class="fno">8. Current and Planned Actions, Strategies, and Tactics:</span>
+    <table><tr><th style="width:80px">Time</th><th>Actions</th></tr>
+      ${ev.slice(-14).reverse().map(e=>`<tr><td>${tPart(e.ts)}</td><td>${esc(e.person)} — ${esc(e.text)}</td></tr>`).join('')
+        ||'<tr><td></td><td><i>No actions logged.</i></td></tr>'}</table>
+
+    <span class="fno">9. Current Organization:</span>
+    <div class="blk">${orgHtml()}</div>
+
+    <span class="fno">10. Resource Summary:</span>
+    <table><tr><th>Resource</th><th>Resource Identifier</th><th>Date/Time Ordered</th><th>ETA</th><th>Arrived</th><th>Notes (location / assignment / status)</th></tr>
+      ${res.map(r=>{const f=fnById(r.fn);const arr=r.status==='on-scene';
+        return `<tr><td>${esc(r.name)}</td><td>${esc(r.ident||'')}</td><td>${dPart(state.startedTs)} ${tPart(state.startedTs)}</td>
+        <td>${arr?'—':'TBC'}</td><td style="text-align:center">${arr?'☑':'☐'}</td>
+        <td>${f?esc(f.name):''} — ${esc(STAT[r.status].label)}</td></tr>`;}).join('')}</table>
+    ${preparedBy(state.command.lead,state.command.name)}
+    <div style="font-size:11px;color:#555;margin-top:4px">ICS 201, Pages 1–4</div>
+  </div>`;
+}
+function form202(){
+  const hasMap=!!(state.mapImage||(state.mapStrokes||[]).length);
+  const cb=on=>on?'☑':'☐';
+  return `<div class="sheet">
+    <h2>Incident Objectives (ICS 202)</h2>
+    <table><tr>
+      <td style="width:50%"><span class="fno">1. Incident Name:</span><span class="val">${esc(state.projectId)}</span></td>
+      ${opHdr()}
+    </tr></table>
+
+    <span class="fno">3. Objective(s):</span>
+    <div class="blk"><ol>${state.objectives.map(o=>`<li>${esc(o.text)}</li>`).join('')||'<i>None set.</i>'}</ol></div>
+
+    <span class="fno">4. Operational Period Command Emphasis:</span>
+    <div class="blk">${state.messages.filter(m=>m.pri!=='routine').slice(-4).map(m=>
+      `<div>• <b>${esc(MPRI[m.pri].label)}</b> — ${esc(m.text)} <i>(${esc(m.from)} → ${esc(toLabel(m.to))})</i></div>`).join('')
+      ||'<i>No command emphasis issued.</i>'}</div>
+
+    <span class="fno">General Situational Awareness:</span>
+    <div class="blk">${esc(state.situation)||'<i>Not yet recorded.</i>'}</div>
+
+    <table><tr><td><span class="fno">5. Site Safety Plan Required?</span>
+      <span class="val">${state.commandStaff&&state.commandStaff.length?'☑ Yes — Safety Officer appointed ('+esc(state.commandStaff[0].lead)+')':'☐ Yes &nbsp; ☑ No'}</span></td></tr></table>
+
+    <span class="fno">6. Incident Action Plan (the items checked below are included in this IAP):</span>
+    <div class="blk">
+      ${cb(false)} ICS 203 &nbsp;&nbsp; ${cb(true)} ICS 204 &nbsp;&nbsp; ${cb(false)} ICS 205 &nbsp;&nbsp;
+      ${cb(false)} ICS 206 &nbsp;&nbsp; ${cb(true)} ICS 207 &nbsp;&nbsp; ${cb(hasMap)} Map/Chart &nbsp;&nbsp; ${cb(true)} Activity Log export
+    </div>
+    <div class="foot"><div><b>7. Prepared by:</b> ${esc(planLead())} · Planning Section</div>
+      <div><b>8. Approved by Incident Commander:</b> ${esc(state.command.lead)}</div></div>
+  </div>`;
+}
+function form204(fnId){
+  const f=fnById(fnId);if(!f)return '';
+  const res=state.resources.filter(r=>r.fn===fnId);
+  const asg=state.assignments.filter(a=>a.fn===fnId).sort((a,b)=>a.pri-b.pri);
+  const ops=fnById('operations')||fnById('fire');
+  return `<div class="sheet">
+    <h2>Assignment List (ICS 204)</h2>
+    <table><tr>
+      <td style="width:40%"><span class="fno">1. Incident Name:</span><span class="val">${esc(state.projectId)}</span></td>
+      ${opHdr()}
+      <td style="width:22%"><span class="fno">3. Branch / Division / Group:</span><span class="val">${esc(f.name)}</span></td>
+    </tr></table>
+
+    <span class="fno">4. Operations Personnel:</span>
+    <table><tr><th style="width:32%">Position</th><th>Name</th><th style="width:28%">Contact</th></tr>
+      <tr><td>Operations Section Chief</td><td>${esc(ops?ops.lead:state.command.lead)}</td><td>—</td></tr>
+      <tr><td>Division / Group Supervisor</td><td>${esc(f.lead)}</td><td>—</td></tr>
+      <tr><td>Incident Commander</td><td>${esc(state.command.lead)}</td><td>—</td></tr></table>
+
+    <span class="fno">5. Resources Assigned:</span>
+    <table><tr><th>Resource Identifier</th><th>Leader</th><th># of Persons</th><th>Contact</th><th>Reporting Location, Special Equipment and Supplies, Remarks</th></tr>
+      ${res.map(r=>`<tr><td>${esc(r.ident||r.name)}</td><td>${esc(f.lead)}</td><td>—</td><td>—</td>
+        <td>${esc(r.name)} — ${esc(STAT[r.status].label)}</td></tr>`).join('')
+        ||'<tr><td colspan="5"><i>No resources currently assigned to this function.</i></td></tr>'}</table>
+
+    <span class="fno">6. Work Assignments:</span>
+    <div class="blk">${asg.map(a=>`<div style="margin-bottom:4px">• <b>[${esc(PRI[a.pri].label)}]</b> ${esc(a.text)}
+      &nbsp;→ ${esc(a.to||'unassigned')} &nbsp;<span class="live">${esc((STATUS3[a.status]||STATUS3.open).label)}</span></div>`).join('')
+      ||'<i>No assignments issued to this function.</i>'}</div>
+
+    <span class="fno">7. Special Instructions:</span>
+    <div class="blk">${f.checklist.filter(i=>!i.done).map(i=>`<div>☐ ${esc(i.text)} <i>(${esc(PRI[i.pri].label)} priority)</i></div>`).join('')
+      ||'<i>All checklist actions for this function are complete.</i>'}</div>
+
+    <div class="foot"><div><b>9. Prepared by:</b> ${esc(planLead())} · Planning Section (Resources Unit)</div>
+      <div><b>Date/Time:</b> ${dPart(Date.now())} ${tPart(Date.now())}</div></div>
+  </div>`;
+}
+function orgHtml(){
+  const cs=state.commandStaff||[];
+  return `<div style="text-align:center">
+    <div class="orgrow"><div class="orgbox"><div class="p">${esc(state.command.name)}</div><div class="nm">${esc(state.command.lead)}</div></div></div>
+    ${cs.length?`<div class="conn"></div><div class="orgrow">${cs.map(s=>
+      `<div class="orgbox"><div class="p">${esc(s.name)}</div><div class="nm">${esc(s.lead)}</div></div>`).join('')}</div>`:''}
+    <div class="conn"></div>
+    <div class="orgrow">${state.functions.map(f=>
+      `<div class="orgbox"><div class="p">${esc(f.name)}${state.template==='ics'?' Section Chief':' Lead'}</div><div class="nm">${esc(f.lead)}</div></div>`).join('')}</div>
+    <div class="orgrow" style="align-items:flex-start">${state.functions.map(f=>{
+      const rs=state.resources.filter(r=>r.fn===f.id);
+      return `<div style="min-width:120px">${rs.map(r=>`<div class="orgbox" style="margin-bottom:5px;background:#fff;font-size:11px">
+        <div class="nm" style="font-weight:600">${esc(r.name)}</div><div class="p">${esc(STAT[r.status].label)}</div></div>`).join('')}</div>`;}).join('')}</div>
+  </div>`;
+}
+function form207(){
+  return `<div class="sheet">
+    <h2>Incident Organization Chart (ICS 207)</h2>
+    <table><tr>
+      <td style="width:50%"><span class="fno">1. Incident Name:</span><span class="val">${esc(state.projectId)}</span></td>
+      ${opHdr()}
+    </tr></table>
+    <span class="fno">3. Organization Chart:</span>
+    <div class="blk">${orgHtml()}</div>
+    ${preparedBy(planLead(),'Planning Section — Resources Unit')}
+  </div>`;
+}
+function fillFormMap(){
+  const host=document.getElementById('f201map');if(!host)return;
+  if(!(state.mapImage||(state.mapStrokes||[]).length)){
+    host.innerHTML='<div style="padding:26px;text-align:center;color:#666"><i>No map or sketch imported yet — import one on the Map / Sketch tab and it appears here automatically.</i></div>';return;}
+  const c=document.createElement('canvas');
+  drawMapTo(c,()=>{host.innerHTML='<img class="mapimg" src="'+c.toDataURL('image/jpeg',0.8)+'">';});
+}
+function renderForms(){
+  const FORMS=[['201','ICS 201 — Incident Briefing'],['202','ICS 202 — Incident Objectives'],
+    ['204','ICS 204 — Assignment List'],['207','ICS 207 — Organization Chart']];
+  document.getElementById('formpick').innerHTML=FORMS.map(([k,l])=>
+    `<button data-form="${k}" class="${k===activeForm?'active':''}" style="${k===activeForm?'border-color:var(--accent);color:var(--ink)':''}">${l}</button>`).join('');
+  document.querySelectorAll('#formpick button').forEach(b=>b.onclick=()=>{activeForm=b.dataset.form;renderForms();});
+  const fi=document.getElementById('opFrom'),ti=document.getElementById('opTo');
+  if(document.activeElement!==fi)fi.value=dtLocal(state.opFrom);
+  if(document.activeElement!==ti)ti.value=dtLocal(state.opTo);
+  fi.onchange=()=>{state.opFrom=new Date(fi.value).getTime();broadcast();renderForms();};
+  ti.onchange=()=>{state.opTo=new Date(ti.value).getTime();broadcast();renderForms();};
+  document.getElementById('printForm').onclick=()=>window.print();
+  const host=document.getElementById('formHost');
+  if(activeForm==='201')host.innerHTML=form201();
+  else if(activeForm==='202')host.innerHTML=form202();
+  else if(activeForm==='207')host.innerHTML=form207();
+  else{
+    host.innerHTML=`<div class="funcpick" id="f204pick" style="margin-bottom:12px">
+        <button data-f204="__all" class="${form204Fn==='__all'?'active':''}">All functions (full IAP set)</button>
+        ${state.functions.map(f=>`<button data-f204="${f.id}" class="${form204Fn===f.id?'active':''}"
+          style="${form204Fn===f.id?'border-color:'+fcol(f.id)+';color:var(--ink)':''}"><span style="color:${fcol(f.id)}">●</span> ${f.name}</button>`).join('')}
+      </div>`+
+      (form204Fn==='__all'?state.functions.map(f=>form204(f.id)).join(''):form204(form204Fn));
+    document.querySelectorAll('#f204pick button').forEach(b=>b.onclick=()=>{form204Fn=b.dataset.f204;renderForms();});
+  }
+  if(activeForm==='201')fillFormMap();
+}
+
 /* ---------- exercise / training mode ---------- */
 function renderExercise(){
   const on=!!state.exercise;
@@ -710,7 +1077,8 @@ function exportLog(){
   setTimeout(()=>URL.revokeObjectURL(a.href),2000);
 }
 function resetScenario(){
-  const ex=state.exercise;localStorage.removeItem(KEY);state=load();state.exercise=ex;
+  const ex=state.exercise,tpl=state.template;localStorage.removeItem(KEY);state=load(tpl);state.exercise=ex;
+  me=people().find(p=>p.id===me.id)||people()[0];
   activeFunc=state.functions[0].id;mapImgCache={src:null,img:null};broadcast();render();
 }
 function initExercise(){
@@ -724,18 +1092,36 @@ function initExercise(){
 
 function renderWho(){
   const sel=document.getElementById('mePick');
-  sel.innerHTML=PEOPLE.map(p=>`<option value="${p.id}" ${p.id===me.id?'selected':''}>${p.name} — ${p.role}</option>`).join("");
-  sel.onchange=()=>{me=PEOPLE.find(p=>p.id===sel.value);if(me.id!=='cmd')activeFunc=me.id;render();};
+  if(document.activeElement===sel)return;
+  const ppl=people();
+  if(!ppl.some(p=>p.id===me.id))me=ppl.find(p=>p.id===state.functions[0].id)||ppl[0];
+  sel.innerHTML=ppl.map(p=>`<option value="${p.id}" ${p.id===me.id?'selected':''}>${p.name} — ${p.role}</option>`).join("");
+  sel.onchange=()=>{me=ppl.find(p=>p.id===sel.value);if(fnById(me.id))activeFunc=me.id;render();};
 }
 function renderStrip(){
   const inp=document.getElementById('projId');
   if(document.activeElement!==inp)inp.value=state.projectId||"INC-2026-0814";
   inp.onchange=()=>{state.projectId=inp.value;broadcast();};
+  const tp=document.getElementById('tplPick');
+  if(document.activeElement!==tp){
+    tp.innerHTML=Object.keys(TEMPLATES).map(k=>`<option value="${k}" ${k===state.template?'selected':''}>${TEMPLATES[k].label}</option>`).join("");
+  }
+  tp.onchange=()=>{
+    const k=tp.value;
+    if(!confirm('Switch the command structure to:\n\n'+TEMPLATES[k].label+'\n\nThis loads that starter template — functions, checklists, resources and assignments. Current demo progress is cleared.')){
+      tp.value=state.template;return;}
+    const ex=state.exercise;state=load(k);state.exercise=ex;
+    me=people().find(p=>p.id===state.functions[0].id)||people()[0];
+    activeFunc=state.functions[0].id;form204Fn='__all';mapImgCache={src:null,img:null};
+    logEvent('🏗 command structure switched to: '+TEMPLATES[k].label,state.functions[0].id);
+  };
 }
 function render(){
-  renderStrip();renderExercise();renderOrg();renderObjectives();renderResources();renderLog();renderOutByFn();renderAssignments();renderMap();renderMessages();
+  renderStrip();renderWho();renderExercise();renderOrg();renderObjectives();renderSituation();renderResources();
+  renderLog();renderOutByFn();renderAssignments();renderMap();renderMessages();
   if(document.getElementById('tab-work').style.display!=='none')renderChecklist();
   if(document.getElementById('tab-map').style.display!=='none')drawEditor();
+  if(document.getElementById('tab-forms').style.display!=='none')renderForms();
   lastEventId=null;
 }
 
@@ -745,6 +1131,7 @@ function switchTab(t){
   document.getElementById('tab-dash').style.display=t==='dash'?'':'none';
   document.getElementById('tab-work').style.display=t==='work'?'':'none';
   document.getElementById('tab-map').style.display=t==='map'?'':'none';
+  document.getElementById('tab-forms').style.display=t==='forms'?'':'none';
   render();
   if(t==='work')renderChecklist();
   if(t==='map')initMapEditor();
