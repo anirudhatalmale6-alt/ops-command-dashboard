@@ -1,29 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 232" width="300" height="232">
-  <rect width="300" height="232" fill="#ffffff"/>
-  <g transform="translate(100,12)"><g stroke="#7b8894" stroke-width="2.5" opacity=".6">
-  <line x1="50.0" y1="26.0" x2="50.0" y2="19.0"/>
-  <line x1="70.8" y1="38.0" x2="76.8" y2="34.5"/>
-  <line x1="70.8" y1="62.0" x2="76.8" y2="65.5"/>
-  <line x1="50.0" y1="74.0" x2="50.0" y2="81.0"/>
-  <line x1="29.2" y1="62.0" x2="23.2" y2="65.5"/>
-  <line x1="29.2" y1="38.0" x2="23.2" y2="34.5"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 236" width="300" height="236">
+  <rect width="300" height="236" fill="#ffffff"/>
+  <g transform="translate(85,10) scale(1.3)"><g stroke="#17191c" stroke-width="2.6" stroke-linecap="round">
+  <line x1="50.0" y1="33.0" x2="50.0" y2="23.5"/>
+  <line x1="67.0" y1="50.0" x2="76.5" y2="50.0"/>
+  <line x1="50.0" y1="67.0" x2="50.0" y2="76.5"/>
+  <line x1="33.0" y1="50.0" x2="23.5" y2="50.0"/>
   </g>
-  <g fill="none" stroke-width="7.5" stroke-linecap="round">
-  <path d="M63.5 16.5 A37 37 0 0 1 84 37" stroke="#3BAFBC"/>
-  <path d="M84 63 A37 37 0 0 1 63.5 83.5" stroke="#2EA85C"/>
-  <path d="M36.5 83.5 A37 37 0 0 1 16 63" stroke="#2E7FD4"/>
-  <path d="M16 37 A37 37 0 0 1 36.5 16.5" stroke="#D93B33"/>
+  <g fill="none" stroke-width="7" stroke-linecap="round">
+  <path d="M15.69 36.14 A37 37 0 0 1 36.14 15.69" stroke="#D93B33"/>
+  <path d="M63.86 15.69 A37 37 0 0 1 84.31 36.14" stroke="#2EA85C"/>
+  <path d="M84.31 63.86 A37 37 0 0 1 63.86 84.31" stroke="#2E7FD4"/>
+  <path d="M36.14 84.31 A37 37 0 0 1 15.69 63.86" stroke="#E8912E"/>
   </g>
-  <circle cx="50" cy="13" r="8" fill="#8A9199"/>
-  <circle cx="82" cy="31.5" r="8" fill="#3BAFBC"/>
-  <circle cx="82" cy="68.5" r="8" fill="#2EA85C"/>
-  <circle cx="50" cy="87" r="8" fill="#2E7FD4"/>
-  <circle cx="18" cy="68.5" r="8" fill="#E8912E"/>
-  <circle cx="18" cy="31.5" r="8" fill="#D93B33"/>
-  <circle cx="50" cy="50" r="16.5" fill="none" stroke="#12242e" stroke-width="9"/></g>
-  <text x="150" y="188" text-anchor="middle" font-family="Helvetica,Arial,sans-serif"
+  <circle cx="50.0" cy="13.0" r="8" fill="none" stroke="#D93B33" stroke-width="6.5"/>
+  <circle cx="87.0" cy="50.0" r="8" fill="none" stroke="#2EA85C" stroke-width="6.5"/>
+  <circle cx="50.0" cy="87.0" r="8" fill="none" stroke="#2E7FD4" stroke-width="6.5"/>
+  <circle cx="13.0" cy="50.0" r="8" fill="none" stroke="#E8912E" stroke-width="6.5"/>
+  <circle cx="50" cy="50" r="13" fill="none" stroke="#17191c" stroke-width="7"/></g>
+  <text x="150" y="196" text-anchor="middle" font-family="Helvetica,Arial,sans-serif"
       font-size="44" font-weight="800" letter-spacing="1.5">
-      <tspan fill="#12242e">IMT</tspan><tspan fill="#2F94A0"> LOGIC</tspan></text>
-  <text x="150" y="210" text-anchor="middle" font-family="Helvetica,Arial,sans-serif"
-      font-size="10.2" font-weight="500" letter-spacing="2.15" fill="#5d6b78">INTEGRATED MANAGEMENT TECHNOLOGY</text>
+      <tspan fill="#17191c">IMT</tspan><tspan fill="#3BAFBC"> LOGIC</tspan></text>
+  <text x="150" y="218" text-anchor="middle" font-family="Helvetica,Arial,sans-serif"
+      font-size="10.2" font-weight="500" letter-spacing="2.15" fill="#6b7885">INTEGRATED MANAGEMENT TECHNOLOGY</text>
 </svg>
