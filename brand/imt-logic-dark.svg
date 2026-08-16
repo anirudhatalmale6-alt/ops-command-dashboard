@@ -10,13 +10,13 @@
   </g>
   <g fill="none" stroke-width="7.5" stroke-linecap="round">
   <path d="M63.5 16.5 A37 37 0 0 1 84 37" stroke="#3BAFBC"/>
-  <path d="M84 63 A37 37 0 0 1 63.5 83.5" stroke="#8A9199"/>
+  <path d="M84 63 A37 37 0 0 1 63.5 83.5" stroke="#2EA85C"/>
   <path d="M36.5 83.5 A37 37 0 0 1 16 63" stroke="#2E7FD4"/>
   <path d="M16 37 A37 37 0 0 1 36.5 16.5" stroke="#D93B33"/>
   </g>
   <circle cx="50" cy="13" r="8" fill="#8A9199"/>
   <circle cx="82" cy="31.5" r="8" fill="#3BAFBC"/>
-  <circle cx="82" cy="68.5" r="8" fill="#8A9199"/>
+  <circle cx="82" cy="68.5" r="8" fill="#2EA85C"/>
   <circle cx="50" cy="87" r="8" fill="#2E7FD4"/>
   <circle cx="18" cy="68.5" r="8" fill="#E8912E"/>
   <circle cx="18" cy="31.5" r="8" fill="#D93B33"/>
