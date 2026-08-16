@@ -1,0 +1,7 @@
+# The production application is a SEPARATE, private repository. It must never be
+# committed into this public demo repo.
+imtlogic/
+
+# Local Postgres cluster for development — contains real password hashes.
+.pgdata/
+.pgrun/
