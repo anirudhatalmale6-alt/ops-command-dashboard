@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Ops Command — Collaborative Task Dashboard (Demo)</title>
+<title>IMT Logic — Incident Command Dashboard (Demo)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%230d1117'/%3E%3Ccircle cx='50' cy='50' r='17' fill='none' stroke='%23ffffff' stroke-width='9'/%3E%3Ccircle cx='50' cy='14' r='8' fill='%238A9199'/%3E%3Ccircle cx='81' cy='32' r='8' fill='%233BAFBC'/%3E%3Ccircle cx='81' cy='68' r='8' fill='%238A9199'/%3E%3Ccircle cx='50' cy='86' r='8' fill='%232E7FD4'/%3E%3Ccircle cx='19' cy='68' r='8' fill='%23E8912E'/%3E%3Ccircle cx='19' cy='32' r='8' fill='%23D93B33'/%3E%3C/svg%3E">
 <style>
   :root{
     --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --line:#2b3444;
     --ink:#e6edf3; --muted:#8b98a9; --dim:#5b6675;
-    --accent:#3b82f6; --accent2:#60a5fa;
+    --accent:#3BAFBC; --accent2:#6FD3DD;   /* IMT Logic teal */
     --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
     --chip:#232b39; --radius:12px; --shadow:0 1px 0 rgba(255,255,255,.02),0 8px 24px rgba(0,0,0,.35);
   }
@@ -20,7 +21,10 @@
 
   header.bar{display:flex;align-items:center;gap:16px;padding:10px 20px;border-bottom:1px solid var(--line);
     background:linear-gradient(180deg,#121722,#0f141d);position:sticky;top:0;z-index:20}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:700}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:700}
+  .brand .logo{width:30px;height:30px;flex:none}
+  .brand .wm{font-size:16px;letter-spacing:1.2px;font-weight:800;color:#fff}
+  .brand .wm b{color:var(--accent);font-weight:800}
   .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px #22c55e22;animation:pulse 2s infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
   .brand small{color:var(--muted);font-weight:500}
@@ -129,6 +133,19 @@
   .asg input[type=checkbox]{width:18px;height:18px;accent-color:var(--ok);cursor:pointer;margin-top:1px;flex:none}
   .asg .meta{font-size:11px;color:var(--muted);margin-top:2px}
   .asg.done label{color:var(--dim);text-decoration:line-through}
+  /* priority filter + not-applicable */
+  .prifilter{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:0 0 10px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .prifilter button{background:var(--chip);border:1px solid var(--line);color:var(--muted);padding:5px 10px;
+    border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;display:flex;gap:5px;align-items:center}
+  .prifilter button.on{border-color:var(--accent);color:var(--ink);background:#12303a}
+  .prifilter .nacount{margin-left:auto;font-size:11px;color:var(--dim)}
+  .nabtn{background:transparent;border:1px solid var(--line);color:var(--dim);font-size:9px;font-weight:700;
+    padding:2px 6px;border-radius:5px;cursor:pointer;letter-spacing:.4px}
+  .nabtn:hover{color:var(--ink);border-color:var(--accent)}
+  .nabox{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line)}
+  .nahdr{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--dim);margin-bottom:4px}
+  .item.na label{color:var(--dim);text-decoration:line-through}
+  .p1tag{font-size:10px;font-weight:800;margin-left:6px;letter-spacing:.3px}
   .pri{font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;white-space:nowrap;letter-spacing:.4px}
   .pri.p1{background:#3a1414;color:#ff6b6b;box-shadow:inset 0 0 0 1px #7a2a2a}
   .pri.p2{background:#3a2a12;color:#f5b942;box-shadow:inset 0 0 0 1px #6b4e1a}
@@ -220,7 +237,28 @@
 <body>
 <div class="app">
   <header class="bar">
-    <div class="brand"><span class="dot"></span> Ops&nbsp;Command <small>· Collaborative Task Dashboard</small></div>
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 100 100" aria-label="IMT Logic">
+        <g stroke="#8fa0b4" stroke-width="2.5" opacity=".6">
+          <line x1="50" y1="26" x2="50" y2="19"/><line x1="70.8" y1="38" x2="76.8" y2="34.5"/>
+          <line x1="70.8" y1="62" x2="76.8" y2="65.5"/><line x1="50" y1="74" x2="50" y2="81"/>
+          <line x1="29.2" y1="62" x2="23.2" y2="65.5"/><line x1="29.2" y1="38" x2="23.2" y2="34.5"/>
+        </g>
+        <g fill="none" stroke-width="7.5" stroke-linecap="round">
+          <path d="M63.5 16.5 A37 37 0 0 1 84 37" stroke="#3BAFBC"/>
+          <path d="M84 63 A37 37 0 0 1 63.5 83.5" stroke="#8A9199"/>
+          <path d="M36.5 83.5 A37 37 0 0 1 16 63" stroke="#2E7FD4"/>
+          <path d="M16 37 A37 37 0 0 1 36.5 16.5" stroke="#D93B33"/>
+        </g>
+        <circle cx="50" cy="13" r="8" fill="#8A9199"/><circle cx="82" cy="31.5" r="8" fill="#3BAFBC"/>
+        <circle cx="82" cy="68.5" r="8" fill="#8A9199"/><circle cx="50" cy="87" r="8" fill="#2E7FD4"/>
+        <circle cx="18" cy="68.5" r="8" fill="#E8912E"/><circle cx="18" cy="31.5" r="8" fill="#D93B33"/>
+        <circle cx="50" cy="50" r="16.5" fill="none" stroke="#ffffff" stroke-width="9"/>
+      </svg>
+      <span class="wm">IMT&nbsp;<b>LOGIC</b></span>
+      <small>· Incident Command Dashboard</small>
+      <span class="dot" title="live"></span>
+    </div>
     <div class="who">
       <span class="live"><span class="dot"></span> live sync</span>
       <label style="color:var(--muted);font-size:12px">You are:</label>
@@ -401,8 +439,13 @@
 <script>
 /* ---------- function colours ---------- */
 const FCOL={fire:"#ef4444",medical:"#22c55e",security:"#3b82f6",logistics:"#f59e0b",planning:"#a78bfa",
-  operations:"#ef4444",finance:"#22c55e",safety:"#f97316",pio:"#38bdf8",liaison:"#c084fc"};
-const PRI={1:{label:"HIGH",cls:"p1"},2:{label:"MED",cls:"p2"},3:{label:"LOW",cls:"p3"}};
+  operations:"#ef4444",finance:"#22c55e",safety:"#f97316",pio:"#38bdf8",liaison:"#c084fc",
+  /* IMT Logic structure */
+  cmd:"#3BAFBC","imt-planning":"#2E7FD4","imt-logistics":"#E8912E","imt-operations":"#D93B33",
+  "ops-asset":"#9AA7B4","ops-fire":"#F0662E","ops-medical":"#2FB86B","ops-security":"#6C7BE8"};
+const PRI={1:{label:"P1",cls:"p1",full:"Immediate / Critical"},
+           2:{label:"P2",cls:"p2",full:"Urgent / Operational"},
+           3:{label:"P3",cls:"p3",full:"Support / Forward action"}};
 const STAT={"on-scene":{label:"On scene",cls:"s-on",c:"#22c55e"},"mobile":{label:"Mobile",cls:"s-mob",c:"#f59e0b"},
   "staging":{label:"At staging",cls:"s-stag",c:"#3b82f6"},"out":{label:"Out of service",cls:"s-out",c:"#8b98a9"}};
 const STAT_ORDER=["on-scene","mobile","staging","out"];
@@ -473,6 +516,178 @@ const TEMPLATES={
       {text:"Open incident cost code and begin time recording",to:"Cost Unit",fn:"finance",pri:3},
     ],
   },
+
+  /* ---- IMT Logic — the client's own Incident Command Team structure.
+         Operations is a parent function with four sub-teams beneath one Operations lead.
+         Checklist content is the client's own document, tagged P1 / P2 / P3. ---- */
+  imt:{
+    label:"IMT — Incident Command Team (Operations sub-teams: Asset / Fire / Medical / Security)",
+    situation:"Loss of containment on the export separator with ignited release at the north end of Module 3. Two persons unaccounted for. Muster incomplete at Lifeboat Station 2. Hazards: adjacent inventory in V-2101, overhead cable tray, wind 18 kts from the south-west carrying smoke across the accommodation. ESD-2 initiated. No entry beyond the warm zone without Incident Commander authority.",
+    commandStaff:[],
+    command:{name:"Incident Commander",lead:"A. Reyes",
+      checklist:[
+        ["Assume command and confirm Incident Command Team activation",1],
+        ["Obtain initial situation report: what happened, where, when, who/what is at risk",1],
+        ["Confirm immediate life-safety actions, alarms, evacuation/shelter and emergency response are underway",1],
+        ["Establish the incident priorities and initial objectives",1],
+        ["Confirm command location and reliable communication channels",1],
+        ["Identify immediate escalation potential and credible worst-case development",1],
+        ["Confirm required internal/external notifications and escalation level",1],
+        ["Confirm Operations, Planning and Logistics functions are established as required",2],
+        ["Establish operational boundaries and confirm overall control of the incident area",2],
+        ["Review resource adequacy and authorise additional resources/mutual aid where required",2],
+        ["Confirm coordination with government/emergency authorities where applicable",2],
+        ["Conduct regular command briefings and review incident objectives",2],
+        ["Ensure significant decisions, actions and changes are recorded",2],
+        ["Consider business continuity, environmental, reputational and community impacts",3],
+        ["Establish criteria for transition from response to recovery",3],
+        ["Approve stand-down, handover or transition arrangements",3]]},
+    functions:[
+      {id:"imt-operations", name:"Operations", lead:"J. Patel",
+        checklist:[
+          ["Confirm tactical priorities with Incident Command",1],
+          ["Confirm all sub-teams have been briefed and have communications",1],
+          ["Confirm personnel accountability across the operational area",1],
+          ["Maintain a single tactical picture across Asset, Fire, Medical and Security",2],
+          ["Coordinate competing resource demands between sub-teams",2],
+          ["Provide consolidated operational updates to Incident Command",2],
+          ["Identify unmet tactical resource needs and pass to Logistics",2],
+          ["Plan crew rotation and relief for sustained operations",3]]},
+      {id:"ops-asset", parent:"imt-operations", name:"Ops — Asset Operator", lead:"H. Vance",
+        checklist:[
+          ["Confirm exact incident location, affected equipment/process and current operating condition",1],
+          ["Identify immediate process hazards and escalation potential",1],
+          ["Confirm Emergency Shutdown/Process Shutdown status",1],
+          ["Isolate hydrocarbon, chemical, electrical and other hazardous energy sources where practicable",1],
+          ["Confirm personnel accountability within the affected asset",1],
+          ["Provide current process conditions to Incident Command",1],
+          ["Identify inventories and potential release quantities",1],
+          ["Establish safe operating/isolation boundaries",2],
+          ["Provide P&IDs, plot plans, isolation drawings and technical information",2],
+          ["Identify neighbouring equipment/assets vulnerable to escalation",2],
+          ["Implement depressurisation, drainage, shutdown or other process-control actions where appropriate",2],
+          ["Monitor pressures, temperatures, levels, gas detection and other critical parameters",2],
+          ["Coordinate technical actions with Fire, Medical and Security leads",2],
+          ["Identify specialist engineering or maintenance resources required",2],
+          ["Assess environmental consequences and containment requirements",2],
+          ["Develop safe-entry and damage-assessment requirements",3],
+          ["Develop stabilisation and temporary repair options",3],
+          ["Establish conditions required for safe restart/reinstatement",3]]},
+      {id:"ops-fire", parent:"imt-operations", name:"Ops — Fire", lead:"D. Cole",
+        checklist:[
+          ["Receive incident briefing and confirm location, hazards and objectives",1],
+          ["Establish Fire Team command and communications",1],
+          ["Confirm crew accountability and appropriate PPE/RPE",1],
+          ["Conduct dynamic risk assessment before committing personnel",1],
+          ["Identify immediate life-rescue requirements",1],
+          ["Establish hot/warm/cold zones as appropriate",1],
+          ["Confirm firewater, foam and extinguishing-agent availability",1],
+          ["Deploy teams for rescue, fire control, cooling or containment as required",1],
+          ["Establish backup/rescue teams for committed crews",2],
+          ["Coordinate process isolation requirements with Asset Operations",2],
+          ["Monitor fire spread, radiant heat, smoke, gas and escalation indicators",2],
+          ["Protect exposures and critical adjacent equipment",2],
+          ["Request additional appliances, foam, BA or specialist resources early",2],
+          ["Establish responder rehabilitation and crew rotation",2],
+          ["Provide regular tactical updates to Operations/Incident Command",2],
+          ["Confirm extinguishment and monitor for re-ignition",3],
+          ["Coordinate safe handover for investigation/recovery",3]]},
+      {id:"ops-medical", parent:"imt-operations", name:"Ops — Medical", lead:"S. Larsen",
+        checklist:[
+          ["Confirm number, location and reported condition of casualties",1],
+          ["Establish Medical Team command and communications",1],
+          ["Confirm scene safety before medical personnel enter operational areas",1],
+          ["Establish casualty collection/treatment area where required",1],
+          ["Initiate triage and prioritise life-saving interventions",1],
+          ["Identify requirement for additional ambulances, medical teams or specialist capability",1],
+          ["Coordinate casualty extraction with Fire/Rescue",1],
+          ["Establish casualty identification and tracking",2],
+          ["Coordinate receiving hospitals and casualty distribution",2],
+          ["Identify contamination/decontamination requirements",2],
+          ["Consider chemical exposure, burns, smoke inhalation and blast injuries as applicable",2],
+          ["Maintain communications with Operations/Incident Command",2],
+          ["Monitor responder health and establish medical support for responder rehabilitation",2],
+          ["Maintain casualty and treatment records",2],
+          ["Confirm all casualties have been accounted for and transferred appropriately",3],
+          ["Support responder welfare and post-incident medical requirements",3],
+          ["Prepare medical summary for handover/post-incident review",3]]},
+      {id:"ops-security", parent:"imt-operations", name:"Ops — Security", lead:"M. Okoro",
+        checklist:[
+          ["Confirm incident location, security hazards and immediate requirements",1],
+          ["Establish Security Team command and communications",1],
+          ["Establish initial cordons and restrict unauthorised access",1],
+          ["Keep emergency access/egress routes clear",1],
+          ["Support evacuation and movement of personnel from threatened areas",1],
+          ["Control access to the Incident Command Post and operational areas",1],
+          ["Establish inner/outer cordons as required",2],
+          ["Establish traffic and vehicle-control arrangements",2],
+          ["Facilitate access for emergency services and responding agencies",2],
+          ["Support personnel accountability and muster arrangements",2],
+          ["Secure critical infrastructure and vulnerable locations",2],
+          ["Manage contractors, visitors, media and unauthorised persons at access points",2],
+          ["Preserve potential evidence and restrict access where required",2],
+          ["Liaise with Police/Government Security where applicable",2],
+          ["Report security changes or suspicious activity immediately to Command",2],
+          ["Maintain access-control records where practicable",3],
+          ["Develop security arrangements for prolonged operations",3],
+          ["Coordinate phased reopening and removal of cordons when authorised",3]]},
+      {id:"imt-planning", name:"Planning", lead:"K. Adeyemi",
+        checklist:[
+          ["Obtain current incident information from Command and Operations",1],
+          ["Establish and maintain the Common Operating Picture",1],
+          ["Confirm incident location, affected area and current operational boundaries",1],
+          ["Identify immediate hazards, exposed populations/assets and potential escalation scenarios",1],
+          ["Record current incident objectives and operational priorities",2],
+          ["Develop incident maps, plots, timelines and status boards as required",2],
+          ["Track deployed resources and their current status",2],
+          ["Gather technical information including weather, process data, drawings, SDS and modelling",2],
+          ["Develop forecasts for likely incident development",2],
+          ["Identify contingencies and credible worst-case scenarios",2],
+          ["Identify resource requirements for the next operational period",2],
+          ["Prepare options/recommendations for Incident Command",2],
+          ["Maintain incident chronology and significant-event log",2],
+          ["Develop the next operational-period plan",3],
+          ["Develop recovery, re-entry and stand-down considerations",3],
+          ["Capture information required for post-incident review",3]]},
+      {id:"imt-logistics", name:"Logistics", lead:"D. Nguyen",
+        checklist:[
+          ["Establish Logistics function and confirm immediate resource requests",1],
+          ["Identify critical resource shortfalls affecting life safety or incident control",1],
+          ["Mobilise priority equipment, personnel and specialist support",1],
+          ["Establish resource request, approval and tracking arrangements",2],
+          ["Confirm transport and access arrangements for responding resources",2],
+          ["Arrange staging areas and resource reception where required",2],
+          ["Provide communications equipment and technical communications support",2],
+          ["Arrange additional PPE, respiratory protection and specialist equipment",2],
+          ["Coordinate fuel, water, foam, consumables and other operational supplies",2],
+          ["Arrange lighting, generators and temporary power where required",2],
+          ["Arrange specialist contractors, vendors and external resources",2],
+          ["Support medical, welfare, hydration and rehabilitation requirements for responders",2],
+          ["Track requested, mobilised, received and outstanding resources",2],
+          ["Arrange food, accommodation, transport and shift-change requirements",3],
+          ["Develop logistics requirements for prolonged operations",3],
+          ["Coordinate demobilisation and return of resources",3]]},
+    ],
+    resources:[
+      {id:"r1",name:"Fire Team 1",ident:"FT-1",fn:"ops-fire",status:"on-scene"},
+      {id:"r2",name:"Fire Team 2 (backup/BA)",ident:"FT-2",fn:"ops-fire",status:"staging"},
+      {id:"r3",name:"Medic Team A",ident:"MED-A",fn:"ops-medical",status:"on-scene"},
+      {id:"r4",name:"Offsite Ambulance",ident:"AMB-1",fn:"ops-medical",status:"mobile"},
+      {id:"r5",name:"Security Patrol 1",ident:"SEC-1",fn:"ops-security",status:"on-scene"},
+      {id:"r6",name:"Control Room Operator",ident:"CRO",fn:"ops-asset",status:"on-scene"},
+      {id:"r7",name:"Foam Tender",ident:"LOG-F",fn:"imt-logistics",status:"mobile"},
+      {id:"r8",name:"Situation Unit",ident:"SIT-1",fn:"imt-planning",status:"on-scene"},
+    ],
+    assignments:[
+      {text:"Confirm ESD-2 status and full hydrocarbon isolation of the export separator",to:"Control Room Operator",fn:"ops-asset",pri:1},
+      {text:"Search Module 3 north end for the two unaccounted persons",to:"Fire Team 1",fn:"ops-fire",pri:1},
+      {text:"Establish casualty collection point at Lifeboat Station 2",to:"Medic Team A",fn:"ops-medical",pri:1},
+      {text:"Cordon the north access and keep the emergency route clear",to:"Security Patrol 1",fn:"ops-security",pri:1},
+      {text:"Confirm foam stock and mobilise the foam tender to staging",to:"Foam Tender",fn:"imt-logistics",pri:2},
+      {text:"Produce the common operating picture and 30-minute SitRep",to:"Situation Unit",fn:"imt-planning",pri:2},
+      {text:"Prepare next operational period plan and relief roster",to:"K. Adeyemi",fn:"imt-planning",pri:3},
+    ],
+  },
 };
 const STATUS3={open:{label:"Not started",cls:"a-open",c:"#8b98a9"},wip:{label:"In progress",cls:"a-wip",c:"#f59e0b"},done:{label:"Complete",cls:"a-done",c:"#22c55e"}};
 const S3_ORDER=["open","wip","done"];
@@ -486,8 +701,8 @@ function buildSeed(tpl){
     incidentNo:"2026-0814",
     startedTs:Date.now()-1000*60*35,
     opFrom:Date.now()-1000*60*30, opTo:Date.now()+1000*60*60*11.5,
-    situation:"Fire in a two-storey commercial unit with possible persons reported. Adjoining units evacuated. Hazards: structural collapse risk to the north elevation, LPG cylinders stored to the rear, overhead power lines on the east access. All responders to wear full PPE; no entry to the north elevation without Safety Officer approval.",
-    command:{name:"Incident Commander", lead:"A. Reyes"},
+    situation:t.situation||"Fire in a two-storey commercial unit with possible persons reported. Adjoining units evacuated. Hazards: structural collapse risk to the north elevation, LPG cylinders stored to the rear, overhead power lines on the east access. All responders to wear full PPE; no entry to the north elevation without Safety Officer approval.",
+    command:Object.assign({id:"cmd",name:"Incident Commander",lead:"A. Reyes",checklist:[]},structuredClone(t.command||{})),
     commandStaff:structuredClone(t.commandStaff),
     functions:structuredClone(t.functions),
     objectives:[
@@ -511,17 +726,19 @@ function people(){
 }
 
 /* ---------- storage / realtime ---------- */
-const KEY="opsdash.v6";
+const KEY="opsdash.v7";
 const bc=("BroadcastChannel" in window)?new BroadcastChannel("opsdash"):null;
 function uid(){return Math.random().toString(36).slice(2,9)+performance.now().toString(36).replace('.','');}
 function load(tpl){
   if(!tpl){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.functions){
     s.mapStrokes=s.mapStrokes||[];if(!('mapImage'in s))s.mapImage=null;s.exercise=!!s.exercise;
     s.messages=s.messages||[];s.commandStaff=s.commandStaff||[];s.template=s.template||'emergency';
+    s.command.id="cmd";s.command.checklist=s.command.checklist||[];
     s.assignments.forEach(a=>{if(!a.status)a.status=a.done?'done':'open';});
     return s;}}catch(e){}}
   const st=buildSeed(tpl||'emergency');
-  st.functions.forEach(f=>f.checklist=f.checklist.map((t,i)=>({id:f.id+"-"+i,text:t[0],pri:t[1],done:false})));
+  const mk=(u)=>u.checklist=u.checklist.map((t,i)=>({id:u.id+"-"+i,text:t[0],pri:t[1],done:false,na:false}));
+  st.functions.forEach(mk);mk(st.command);
   const f0=st.functions[0],f1=st.functions[1];
   st.events=[{id:uid(),ts:Date.now()-1000*60*7,person:st.command.lead,fn:st.functions.find(f=>f.id==='planning')?'planning':f0.id,fnName:"Command",text:"Incident declared — functions activated"}];
   st.messages=[
@@ -545,9 +762,14 @@ function initials(n){return n.split(/[\s.]+/).filter(Boolean).map(x=>x[0]).slice
 function colorFor(n){let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))>>>0;return AV[h%AV.length];}
 function avatar(name){return `<span class="avatar" style="background:${colorFor(name)}">${initials(name)}</span>`;}
 function hhmm(ts){return new Date(ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
-function fnById(id){return state.functions.find(f=>f.id===id);}
+function fnById(id){return id==="cmd"?state.command:state.functions.find(f=>f.id===id);}
 function fnByName(nm){return state.functions.find(f=>f.name===nm);}
-function openCount(f){return f.checklist.filter(i=>!i.done).length;}
+/* every checklist-bearing unit: the IC first (only if their template gives them one), then functions */
+function units(){return ((state.command.checklist||[]).length?[state.command]:[]).concat(state.functions);}
+function childrenOf(id){return state.functions.filter(f=>f.parent===id);}
+function live(f){return (f.checklist||[]).filter(i=>!i.na);}          // N/A items drop out of every count
+function openCount(f){return live(f).filter(i=>!i.done).length;}
+function priCount(f,p){const l=live(f).filter(i=>i.pri===p);return {done:l.filter(i=>i.done).length,tot:l.length};}
 function fcol(id){return FCOL[id]||"#8b98a9";}
 function isCmd(){return me.id==="cmd";}
 
@@ -567,9 +789,16 @@ function renderOrg(){
         <div class="node" style="border-top:3px solid ${fcol(s.id)};min-width:auto;padding:5px 9px">
           <div class="r" style="color:${fcol(s.id)};font-size:9px">${s.name}</div><div class="n" style="font-size:12px">${s.lead}</div></div>`).join("")}</div>`:''}
     <div class="connector"></div>
-    <div class="row2">${fns.map(f=>`
-      <div class="branch"><div class="node" style="border-top:3px solid ${fcol(f.id)}">
-        <div class="r" style="color:${fcol(f.id)}">${f.name}</div><div class="n">${f.lead}</div></div></div>`).join("")}</div>`;
+    <div class="row2">${fns.filter(f=>!f.parent).map(f=>{
+      const kids=childrenOf(f.id);
+      return `<div class="branch"><div class="node" style="border-top:3px solid ${fcol(f.id)}">
+        <div class="r" style="color:${fcol(f.id)}">${f.name}</div><div class="n">${f.lead}</div></div>
+        ${kids.length?`<div class="connector" style="height:10px"></div>
+          <div class="row2" style="gap:5px">${kids.map(k=>`
+            <div class="node" style="border-top:3px solid ${fcol(k.id)};min-width:auto;padding:4px 8px">
+              <div class="r" style="color:${fcol(k.id)};font-size:9px">${k.name.replace(/^Ops — /,'')}</div>
+              <div class="n" style="font-size:11px">${k.lead}</div></div>`).join("")}</div>`:''}
+      </div>`;}).join("")}</div>`;
 }
 function renderObjectives(){
   document.getElementById('objCount').textContent=state.objectives.length;
@@ -632,10 +861,12 @@ function renderLog(){
 }
 function renderOutByFn(){
   const el=document.getElementById('outByFn');
-  el.innerHTML=state.functions.map(f=>{
-    const o=openCount(f),tot=f.checklist.length,pctDone=Math.round((tot-o)/tot*100);
-    return `<div class="obf"><span class="dotc" style="background:${fcol(f.id)}"></span>
-      <div style="flex:1"><span class="fn">${f.name}</span>
+  el.innerHTML=units().map(f=>{
+    const o=openCount(f),tot=live(f).length,pctDone=tot?Math.round((tot-o)/tot*100):100;
+    const p1=priCount(f,1),sub=!!f.parent;
+    return `<div class="obf" style="${sub?'padding-left:15px':''}"><span class="dotc" style="background:${fcol(f.id)}"></span>
+      <div style="flex:1"><span class="fn">${sub?f.name.replace(/^Ops — /,''):f.name}</span>
+        <span class="p1tag" style="color:${p1.done<p1.tot?'#ff6b6b':'#22c55e'}">P1 ${p1.done}/${p1.tot}</span>
         <div class="barmini"><div style="width:${pctDone}%;background:${fcol(f.id)}"></div></div></div>
       <span class="n" style="color:${o?'var(--warn)':'var(--ok)'}">${o}</span></div>`;
   }).join("");
@@ -710,23 +941,51 @@ function delAsg(id){
   state.assignments=state.assignments.filter(x=>x.id!==id);
   logEvent('🗑 assignment removed: “'+a.text+'”',a.fn);
 }
+let priFilter=1;   /* 1 = P1 only · 2 = P1+P2 · 3 = everything. Starts at P1 deliberately. */
 function renderChecklist(){
-  const f=fnById(activeFunc);
+  const f=fnById(activeFunc)||state.functions[0];
   document.getElementById('clTitle').textContent=f.name+" — "+f.lead;
-  document.getElementById('funcpick').innerHTML=state.functions.map(x=>
-    `<button data-f="${x.id}" class="${x.id===activeFunc?'active':''}" style="${x.id===activeFunc?'border-color:'+fcol(x.id)+';color:var(--ink)':''}">
-      <span style="color:${fcol(x.id)}">●</span> ${x.name} (${openCount(x)})</button>`).join("");
+  document.getElementById('funcpick').innerHTML=units().map(x=>{
+    const sub=!!x.parent, p1=priCount(x,1), on=x.id===activeFunc;
+    return `<button data-f="${x.id}" class="${on?'active':''}" style="${sub?'font-size:11px;padding:5px 9px;':''}${on?'border-color:'+fcol(x.id)+';color:var(--ink)':''}">
+      <span style="color:${fcol(x.id)}">${sub?'└':'●'}</span> ${x.name}
+      <span style="color:${p1.done<p1.tot?'var(--bad)':'var(--ok)'};font-weight:800">P1 ${p1.done}/${p1.tot}</span>
+      <span style="color:var(--dim)">· ${openCount(x)} open</span></button>`;}).join("");
   document.querySelectorAll('#funcpick button').forEach(b=>b.onclick=()=>{activeFunc=b.dataset.f;render();});
+
+  const c1=priCount(f,1),c2=priCount(f,2),c3=priCount(f,3);
+  const shown=live(f).filter(i=>i.pri<=priFilter);
+  const naCount=(f.checklist||[]).filter(i=>i.na).length;
+  const pill=(p,c,lbl)=>`<button data-pf="${p}" class="${priFilter===p?'on':''}">${lbl}
+      <b style="color:${c.done<c.tot?'var(--warn)':'var(--ok)'}">${c.done}/${c.tot}</b></button>`;
   document.getElementById('checklist').innerHTML=
-    f.checklist.map(i=>`<div class="item ${i.done?'done':''}">
+    `<div class="prifilter">
+       ${pill(1,c1,'P1 only')}${pill(2,{done:c1.done+c2.done,tot:c1.tot+c2.tot},'P1 + P2')}
+       ${pill(3,{done:c1.done+c2.done+c3.done,tot:c1.tot+c2.tot+c3.tot},'Everything')}
+       ${naCount?`<span class="nacount">${naCount} marked N/A</span>`:''}
+     </div>`
+    +(shown.length?shown.map(i=>`<div class="item ${i.done?'done':''}">
       <input type="checkbox" ${i.done?'checked':''} data-item="${i.id}">
-      <label>${i.text}</label><span class="pri ${PRI[i.pri].cls}">${PRI[i.pri].label}</span></div>`).join("")
+      <label>${i.text}</label><span class="pri ${PRI[i.pri].cls}" title="${PRI[i.pri].full}">${PRI[i.pri].label}</span>
+      <button class="nabtn" data-na="${i.id}" title="Not applicable to this incident — drops out of the counts">N/A</button></div>`).join("")
+      :`<div class="empty">Nothing outstanding at this priority. Widen the filter above.</div>`)
+    +(naCount?`<div class="nabox"><div class="nahdr">Marked not applicable</div>`
+      +f.checklist.filter(i=>i.na).map(i=>`<div class="item na">
+        <label>${i.text}</label><span class="pri ${PRI[i.pri].cls}">${PRI[i.pri].label}</span>
+        <button class="nabtn on" data-na="${i.id}" title="Put this back on the list">restore</button></div>`).join("")+`</div>`:'')
     +`<div class="addrow"><input id="noteInput" placeholder="Log a note / update to the activity log…">
         <button class="btn" id="noteBtn">Log event</button></div>
-      <div class="hint">Ticking an item auto-logs a timestamped, colour-coded event. Notes post straight to the central log.</div>`;
+      <div class="hint">Starts on P1 — immediate and critical only. Ticking an item auto-logs a timestamped, colour-coded event.
+        N/A removes an item from the counts without deleting it, so nobody has to tick something that didn't apply.</div>`;
+  document.querySelectorAll('#checklist button[data-pf]').forEach(b=>b.onclick=()=>{priFilter=+b.dataset.pf;renderChecklist();});
+  document.querySelectorAll('#checklist button[data-na]').forEach(b=>b.onclick=()=>{
+    const item=f.checklist.find(x=>x.id===b.dataset.na);if(!item)return;
+    item.na=!item.na;if(item.na)item.done=false;
+    logEvent((item.na?'✖ marked not applicable: ':'↩ restored to the checklist: ')+'“'+item.text+'”',f.id);
+  });
   document.querySelectorAll('#checklist input[type=checkbox]').forEach(cb=>cb.onchange=()=>{
     const item=f.checklist.find(x=>x.id===cb.dataset.item);item.done=cb.checked;
-    logEvent((cb.checked?'✔ completed':'↩ re-opened')+' “'+item.text+'”',f.id);
+    logEvent((cb.checked?'✔ completed':'↩ re-opened')+' ['+PRI[item.pri].label+'] “'+item.text+'”',f.id);
   });
   document.getElementById('noteBtn').onclick=postNote;
   document.getElementById('noteInput').addEventListener('keydown',e=>{if(e.key==='Enter')postNote();});
