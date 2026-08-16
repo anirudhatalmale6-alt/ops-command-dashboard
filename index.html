@@ -134,10 +134,19 @@
   .asg .meta{font-size:11px;color:var(--muted);margin-top:2px}
   .asg.done label{color:var(--dim);text-decoration:line-through}
   /* priority filter + not-applicable */
-  .prifilter{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:0 0 10px;border-bottom:1px solid var(--line);margin-bottom:8px}
-  .prifilter button{background:var(--chip);border:1px solid var(--line);color:var(--muted);padding:5px 10px;
-    border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;display:flex;gap:5px;align-items:center}
-  .prifilter button.on{border-color:var(--accent);color:var(--ink);background:#12303a}
+  .prifilter{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 0 12px;border-bottom:1px solid var(--line);margin-bottom:10px}
+  /* Sized for a gloved hand on a tablet in a control room, not for a mouse. */
+  .prifilter button{background:var(--chip);border:1.5px solid var(--line);color:var(--muted);
+    padding:11px 16px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;
+    display:flex;gap:9px;align-items:center;min-height:44px;letter-spacing:.2px;transition:.12s}
+  .prifilter button .swatch{width:11px;height:11px;border-radius:3px;flex:none}
+  .prifilter button .n{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
+  .prifilter button:hover{border-color:var(--dim);color:var(--ink)}
+  /* Selected takes its OWN priority colour, so which filter is live is readable from
+     across a room rather than from a one-pixel border. */
+  .prifilter button.on.pf1{border-color:#ef4444;background:rgba(239,68,68,.16);color:#ffb3ae}
+  .prifilter button.on.pf2{border-color:#f59e0b;background:rgba(245,158,11,.15);color:#f3c67c}
+  .prifilter button.on.pfall{border-color:var(--accent);background:#12303a;color:var(--ink)}
   .prifilter .nacount{margin-left:auto;font-size:11px;color:var(--dim)}
   .nabtn{background:transparent;border:1px solid var(--line);color:var(--dim);font-size:9px;font-weight:700;
     padding:2px 6px;border-radius:5px;cursor:pointer;letter-spacing:.4px}
@@ -941,7 +950,8 @@ function delAsg(id){
   state.assignments=state.assignments.filter(x=>x.id!==id);
   logEvent('🗑 assignment removed: “'+a.text+'”',a.fn);
 }
-let priFilter=1;   /* 1 = P1 only · 2 = P1+P2 · 3 = everything. Starts at P1 deliberately. */
+let priFilter=1;   /* 1 = Priority 1 · 2 = Priority 2 · 'all' = everything, including P3.
+                      Starts on Priority 1 deliberately. */
 function renderChecklist(){
   const f=fnById(activeFunc)||state.functions[0];
   document.getElementById('clTitle').textContent=f.name+" — "+f.lead;
@@ -954,14 +964,19 @@ function renderChecklist(){
   document.querySelectorAll('#funcpick button').forEach(b=>b.onclick=()=>{activeFunc=b.dataset.f;render();});
 
   const c1=priCount(f,1),c2=priCount(f,2),c3=priCount(f,3);
-  const shown=live(f).filter(i=>i.pri<=priFilter);
+  /* Each button shows exactly what it says on it. A button labelled "Priority 2" that
+     also lists Priority 1 items is the kind of thing that misleads someone under stress. */
+  const shown=live(f).filter(i=>priFilter==='all'||i.pri===priFilter);
   const naCount=(f.checklist||[]).filter(i=>i.na).length;
-  const pill=(p,c,lbl)=>`<button data-pf="${p}" class="${priFilter===p?'on':''}">${lbl}
-      <b style="color:${c.done<c.tot?'var(--warn)':'var(--ok)'}">${c.done}/${c.tot}</b></button>`;
+  const all={done:c1.done+c2.done+c3.done,tot:c1.tot+c2.tot+c3.tot};
+  const pill=(p,c,lbl,sw)=>`<button data-pf="${p}" class="pf${p} ${priFilter===p?'on':''}">
+      ${sw?`<span class="swatch" style="background:${sw}"></span>`:''}${lbl}
+      <span class="n" style="color:${c.done<c.tot?(sw||'var(--warn)'):'var(--ok)'}">${c.done}/${c.tot}</span></button>`;
   document.getElementById('checklist').innerHTML=
     `<div class="prifilter">
-       ${pill(1,c1,'P1 only')}${pill(2,{done:c1.done+c2.done,tot:c1.tot+c2.tot},'P1 + P2')}
-       ${pill(3,{done:c1.done+c2.done+c3.done,tot:c1.tot+c2.tot+c3.tot},'Everything')}
+       ${pill(1,c1,'Priority 1','#ef4444')}
+       ${pill(2,c2,'Priority 2','#f59e0b')}
+       ${pill('all',all,'All','')}
        ${naCount?`<span class="nacount">${naCount} marked N/A</span>`:''}
      </div>`
     +(shown.length?shown.map(i=>`<div class="item ${i.done?'done':''}">
@@ -977,7 +992,9 @@ function renderChecklist(){
         <button class="btn" id="noteBtn">Log event</button></div>
       <div class="hint">Starts on P1 — immediate and critical only. Ticking an item auto-logs a timestamped, colour-coded event.
         N/A removes an item from the counts without deleting it, so nobody has to tick something that didn't apply.</div>`;
-  document.querySelectorAll('#checklist button[data-pf]').forEach(b=>b.onclick=()=>{priFilter=+b.dataset.pf;renderChecklist();});
+  document.querySelectorAll('#checklist button[data-pf]').forEach(b=>b.onclick=()=>{
+    /* 'all' must stay a string — +'all' is NaN and every item would vanish */
+    priFilter=b.dataset.pf==='all'?'all':+b.dataset.pf;renderChecklist();});
   document.querySelectorAll('#checklist button[data-na]').forEach(b=>b.onclick=()=>{
     const item=f.checklist.find(x=>x.id===b.dataset.na);if(!item)return;
     item.na=!item.na;if(item.na)item.done=false;
