@@ -140,6 +140,7 @@
     padding:11px 16px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;
     display:flex;gap:9px;align-items:center;min-height:44px;letter-spacing:.2px;transition:.12s}
   .prifilter button .swatch{width:11px;height:11px;border-radius:3px;flex:none}
+  .prifilter button i{font-style:normal;font-size:10px;font-weight:700;opacity:.62;margin-left:-4px}
   .prifilter button .n{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
   .prifilter button:hover{border-color:var(--dim);color:var(--ink)}
   /* Selected takes its OWN priority colour, so which filter is live is readable from
@@ -950,8 +951,10 @@ function delAsg(id){
   state.assignments=state.assignments.filter(x=>x.id!==id);
   logEvent('🗑 assignment removed: “'+a.text+'”',a.fn);
 }
-let priFilter=1;   /* 1 = Priority 1 · 2 = Priority 2 · 'all' = everything, including P3.
-                      Starts on Priority 1 deliberately. */
+let priFilter=1;   /* Cumulative: 1 = P1 only · 2 = P1 and P2 · 'all' = everything, P3 included.
+                      Starts on Priority 1 deliberately.
+                      Cumulative rather than exclusive because it means an open P1 can never
+                      be filtered off the screen — widening the filter only ever adds. */
 function renderChecklist(){
   const f=fnById(activeFunc)||state.functions[0];
   document.getElementById('clTitle').textContent=f.name+" — "+f.lead;
@@ -964,19 +967,21 @@ function renderChecklist(){
   document.querySelectorAll('#funcpick button').forEach(b=>b.onclick=()=>{activeFunc=b.dataset.f;render();});
 
   const c1=priCount(f,1),c2=priCount(f,2),c3=priCount(f,3);
-  /* Each button shows exactly what it says on it. A button labelled "Priority 2" that
-     also lists Priority 1 items is the kind of thing that misleads someone under stress. */
-  const shown=live(f).filter(i=>priFilter==='all'||i.pri===priFilter);
+  const shown=live(f).filter(i=>priFilter==='all'||i.pri<=priFilter);
   const naCount=(f.checklist||[]).filter(i=>i.na).length;
-  const all={done:c1.done+c2.done+c3.done,tot:c1.tot+c2.tot+c3.tot};
-  const pill=(p,c,lbl,sw)=>`<button data-pf="${p}" class="pf${p} ${priFilter===p?'on':''}">
-      ${sw?`<span class="swatch" style="background:${sw}"></span>`:''}${lbl}
+  const p12={done:c1.done+c2.done,tot:c1.tot+c2.tot};
+  const all={done:p12.done+c3.done,tot:p12.tot+c3.tot};
+  /* The count on each button is the count of what that button SHOWS, so the number and
+     the list can never disagree. The "+ P1" on the middle one is there because a button
+     labelled only "Priority 2" that also lists P1 items would be quietly lying. */
+  const pill=(p,c,lbl,sub,sw)=>`<button data-pf="${p}" class="pf${p} ${priFilter===p?'on':''}">
+      ${sw?`<span class="swatch" style="background:${sw}"></span>`:''}${lbl}${sub?`<i>${sub}</i>`:''}
       <span class="n" style="color:${c.done<c.tot?(sw||'var(--warn)'):'var(--ok)'}">${c.done}/${c.tot}</span></button>`;
   document.getElementById('checklist').innerHTML=
     `<div class="prifilter">
-       ${pill(1,c1,'Priority 1','#ef4444')}
-       ${pill(2,c2,'Priority 2','#f59e0b')}
-       ${pill('all',all,'All','')}
+       ${pill(1,c1,'Priority 1','','#ef4444')}
+       ${pill(2,p12,'Priority 2','+ P1','#f59e0b')}
+       ${pill('all',all,'All','','')}
        ${naCount?`<span class="nacount">${naCount} marked N/A</span>`:''}
      </div>`
     +(shown.length?shown.map(i=>`<div class="item ${i.done?'done':''}">
